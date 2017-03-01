@@ -29,11 +29,11 @@ echo "Socket is now listening...\n";
 
 $client=socket_accept($socket);
 
-if(socket_getpeername($socket,$address,$port)){
+if(socket_getpeername($client,$address,$port)){
 	echo "Client $address:$port is now connected to us.\n";
 }
 
-socket_clode($client);
+socket_close($client);
 socket_close($socket);
 
 

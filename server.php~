@@ -25,12 +25,12 @@ if(!socket_listen($socket,10)){
 	$errormsg=socket_strerror($errorcode);
 	die("Socket can't listen:  [$errorcode] $errormsg");
 }
-echo "Socket is now listening...";
+echo "Socket is now listening...\n";
 
 $client=socket_accept($socket);
 
-if(socket_getpeername($socket,$address,$port)){
-	echo "Client $address:$port is now connected to us.";
+if(socket_getpeername($client,$address,$port)){
+	echo "Client $address:$port is now connected to us.\n";
 }
 
 socket_clode($client);
