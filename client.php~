@@ -15,3 +15,11 @@ if(!socket_connect($socket,"127.0.0.1",5000)){
 }
 
 echo "Connection enstablished\n";
+
+$message="Hello world!";
+
+if(!socket_send($socket,$message,strlen($message),0)){
+	$errorcode=socket_last_error();
+	$errormsg=socket_strerror($errorcode);
+	die("Can't send message: [$errorcode] $errormsg");
+}
