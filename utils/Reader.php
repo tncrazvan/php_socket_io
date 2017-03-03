@@ -25,7 +25,6 @@ abstract class Reader extends Thread{
     }
 
     echo "\nThread started";
-    //read data from the incoming socket
     $this->result="";
 
     //leggo una volta e continuo a leggere se il mittente scrive qualsiasi cosa diversa da "|"

@@ -63,6 +63,4 @@ while($allowed_to_run){
 	//eseguo il Thread
 	$sr->start();
 }
-
-socket_close($client);
 socket_close($socket);
