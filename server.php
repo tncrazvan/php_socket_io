@@ -1,51 +1,39 @@
 <?php
+require_once("./utils/ServerReader.php");
+$allowed_to_run=true;
 
 if(!($socket=socket_create(AF_INET, SOCK_STREAM,0))){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 
-	die("Couldn't create socket: [$errorcode] $errormsg");
+	die("\nCouldn't create socket: [$errorcode] $errormsg");
 }
 
-echo "Socket created\n";
+echo "\nSocket created";
 
 //Bind the Source address
 
 if(!socket_bind($socket,"127.0.0.1",5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
-	die("Could not bind socket: [$errorcode] $errormsg");
+	die("\nCould not bind socket: [$errorcode] $errormsg");
 }
 
-echo "Socked bind OK\n";
+echo "\nSocked bind OK";
 
 
 if(!socket_listen($socket,10)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
-	die("Socket can't listen:  [$errorcode] $errormsg");
+	die("\nSocket can't listen:  [$errorcode] $errormsg");
 }
-echo "Socket is now listening...\n";
+echo "\nSocket is now listening...";
 
-$client=socket_accept($socket);
-
-if(socket_getpeername($client,$address,$port)){
-	echo "Client $address:$port is now connected to us.\n";
+while($allowed_to_run){
+	$client=socket_accept($socket);
+	$sr=new ServerReader($client,1);
+	$sr->start();
 }
 
-//read data from the incoming socket
-$input = socket_read($client, 1024000);
-
-$response = "OK .. $input";
-
-// Display output  back to client
-socket_write($client, $response);
 socket_close($client);
 socket_close($socket);
-
-
-
-
-
-
-

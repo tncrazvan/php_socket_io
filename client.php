@@ -1,39 +1,40 @@
 <?php
+require_once("./utils/Message.php");
 
+$allowed_to_send=true;
 if(!($socket=socket_create(AF_INET,SOCK_STREAM,0))){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
-	die("Socket couldn't be created: [$errocode] $errormsg");
+	die("\nSocket couldn't be created: [$errocode] $errormsg");
 }
 
-echo "Socket created\n";
+echo "\nSocket created";
 
 if(!socket_connect($socket,"127.0.0.1",5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
-	die("Socket can't connect: [$errorcode] $errormsg");
+	die("\nSocket can't connect: [$errorcode] $errormsg");
 }
 
-echo "Connection enstablished\n";
+echo "\nConnection enstablished";
 
-$message="Hello world!";
 
-if(!socket_send($socket,$message,strlen($message),0)){
-	$errorcode=socket_last_error();
-	$errormsg=socket_strerror($errorcode);
-	die("Can't send message: [$errorcode] $errormsg");
-}
 
-echo "Message send successfully \n";
- 
+$message=new Message($socket,"Hello world!");
+$message->start();
+$message=new Message($socket,"How are you?");
+$message->start();
+$message=new Message($socket,"|",false);
+$message->start();
+
 //Now receive reply from server
-if(socket_recv ( $sock , $buf , 2045 , MSG_WAITALL ) === FALSE)
+/*if(socket_recv ($socket , $buf , 2045 , MSG_WAITALL ) === FALSE)
 {
     $errorcode = socket_last_error();
     $errormsg = socket_strerror($errorcode);
-     
-    die("Could not receive data: [$errorcode] $errormsg \n");
-}
- 
+
+    die("\nCould not receive data: [$errorcode] $errormsg");
+}*/
+socket_close($socket);
 //print the received message
-echo $buf;
+//echo $buf;
