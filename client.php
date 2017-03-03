@@ -10,7 +10,7 @@ if(!($socket=socket_create(AF_INET, SOCK_STREAM,0))){
 
 echo "\nSocket created";
 
-//connession al server 127.0.0.1:50000
+//connessione al server 127.0.0.1:50000
 //da modificare per estrare un indirizzo ip
 //valido attraverso un domain name invece di
 //usare un hard-typing dell'indirizzo singolo
