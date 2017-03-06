@@ -30,6 +30,6 @@ class ServerReader extends Reader{
 
   protected function callback($result,$address,$port){
     //callback code
-    echo "\nRESULT FROM $address:$port -> ".base64_decode(substr($result, 0 , strlen($result)-2));
+    echo "\nRESULT FROM $address:$port -> ".substr($result, 0 , strlen($result)-2);
   }
 }
