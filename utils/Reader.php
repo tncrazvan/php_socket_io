@@ -36,13 +36,15 @@ abstract class Reader extends Thread{
         $line=@socket_read($this->socket,1,PHP_NORMAL_READ);
         //se il byte che ho letto è diverso da "|"...
         if($line != "|"){
-          echo "[$line]";
+          //echo "[$line]";
           //...lo appendo a $this->result
           $this->result.=$line;
         }
     }while($line != "|");
     //funzione di richiamo (controlla utils/ServerReader.php)
     $this->callback(base64_decode($this->result),$this->address,$this->port);
+
+    socket_close($this->socket);
   }
 
   //funzione di richiamo (controlla utils/ServerReader.php)

@@ -24,12 +24,16 @@ class ServerReader extends Reader{
         //il carattere "|" indica la fine della comunicazione, perciò
         //esso NON DEVE essere mai condificato in base64, perché la sua rappresentazione
         //in caratteri alfabetici potrebbe essere alterata a fine trasmissione
-        //e il server continuerà ad ascoltare il canale di comunicazione.
+        //e il server continuerà ad ascoltare il canale di comunicazione a vuoto.
 
   */
 
   protected function callback($result,$address,$port){
     //callback code
-    echo "\nRESULT: $result";
+    $data=json_decode($result,true);
+    print("\nTipo del contenuto: ".$data["content-type"]);
+    print("\nFile-short-name: ".$data["file-short-name"]);
+    print("\nFile-extension: ".$data["file-extension"]);
+    file_put_contents($data["file-name"]."-copy.jpg", base64_decode($data["content64"]));
   }
 }
