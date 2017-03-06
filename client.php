@@ -22,15 +22,19 @@ if(!socket_connect($socket,"127.0.0.1",5000)){
 
 echo "\nConnection enstablished";
 
+function end_conversation($socket){
+	socket_write($socket,"|",strlen("|"));
+}
 
 //invio diversi messaggi al server
-$message=new Message($socket,"Hello world!");
+/*$message=new Message($socket,"Hello world!",false);
 $message->start();
-$message=new Message($socket,"How are you?");
-$message->start();
+$message2=new Message($socket,"|",false);
+$message2->start();*/
+$msg=base64_encode("hello world, come va mondo?");
+socket_write($socket,$msg,strlen($msg));
+end_conversation($socket);
 //"|" è il carattere che rappresenta la fine della comunicazione
-$message=new Message($socket,"|",false);
-$message->start();
 
 //chiudo la connessione con il server
 socket_close($socket);

@@ -27,18 +27,20 @@ abstract class Reader extends Thread{
     echo "\nThread started";
     $this->result="";
 
+    echo "\n";
+    $i=0;
     //leggo una volta e continuo a leggere se il mittente scrive qualsiasi cosa diversa da "|"
     do{
+        $i++;
         //leggo 1 byte e lo salvo in $line
-        $line=@socket_read($this->socket,1);
+        $line=@socket_read($this->socket,1,PHP_NORMAL_READ);
         //se il byte che ho letto è diverso da "|"...
         if($line != "|"){
+          echo "[$line]";
           //...lo appendo a $this->result
           $this->result.=$line;
         }
     }while($line != "|");
-    echo "\nENCODED RESULT: \n".$this->result;
-    echo "\nEnd Thread";
     //funzione di richiamo (controlla utils/ServerReader.php)
     $this->callback(base64_decode($this->result),$this->address,$this->port);
   }
