@@ -1,5 +1,5 @@
 <?php
-require_once("./utils/ServerReader.php");
+require_once("./utils/ServerReader64.php");
 
 //E' un flag che permette allo script di accettare
 //continuamente le richieste di connessione da parte dei client
@@ -55,10 +55,10 @@ while($allowed_to_run){
 	//		sotto il dominio di unipg.it
 	$client=socket_accept($socket);
 
-	//ServerReader crea un Reader (utils/Reader.php)
+	//ServerReader crea un Reader64 (utils/Reader64.php)
 	//Il quale a sua volta crea un Thread in cui legge i
 	//messaggi del client rispettivo
-	$sr=new ServerReader($client,1);
+	$sr=new ServerReader64($client,1);
 
 	//eseguo il Thread
 	$sr->start();

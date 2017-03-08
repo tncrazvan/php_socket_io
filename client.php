@@ -2,13 +2,6 @@
 require_once("./utils/TextMessage64.php");
 require_once("./utils/File64.php");
 
-function end_conversation($socket){
-	//"|" è il carattere che rappresenta la fine della comunicazione
-	socket_write($socket,"|",strlen("|"));
-	//chiudo la connessione con il server
-	socket_close($socket);
-}
-
 
 //creazione socket
 if(!($socket=socket_create(AF_INET, SOCK_STREAM,0))){
@@ -32,11 +25,17 @@ if(!socket_connect($socket,"127.0.0.1",5000)){
 echo "\nConnection enstablished";
 
 //invio diversi messaggi al server
-/*$txt=new TextMessage64("Mi chiamo Razvan.");
+
+/*
+$txt = new TextMessage64("Hello world!");
 $txt->send_to($socket);
-end_conversation($socket);*/
+*/
+
+
 
 $file=new File64('./test-file.jpg');
 $file->send_to($socket);
 
-end_conversation($socket);
+
+
+socket_close($socket);

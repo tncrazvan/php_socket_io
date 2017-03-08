@@ -3,7 +3,7 @@
 class TextMessage64{
   private $content64;
   public function __construct($content){
-    $this->content64=$content64;
+    $this->content64=$content;
   }
 
   public function send_to($socket){
