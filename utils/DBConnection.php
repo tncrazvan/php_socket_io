@@ -25,7 +25,7 @@ class DBConnection{
   }
 
   public function query($string){
-    $this->query++;
+    $this->query_index++;
     $this->query_string_history[]=$string;
     return $this->mysqli->query($string);
   }
@@ -52,7 +52,7 @@ class DBConnection{
     if($this->query_index-1 >= 0)
       $this->current_index--;
   }
-  
+
   public function execute_selected_query(){
     $this->mysqli->query($this->query_string_history[$query_index]);
   }
