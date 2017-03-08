@@ -45,10 +45,10 @@ class ServerReader64 extends Reader64{
       case "text-plain":
           print("\nRESULT: ".$data["content64"]);
           echo "\n";
-          /*$db=new DBConnection("127.0.0.1","root","root","test");
+          $db=new DBConnection("127.0.0.1","root","ascent","test");
           $query=$db->query("select * from test_table;");
-          $riga=$mysqli_fetch_array($query);
-          print_r($riga);*/
+          $riga=mysqli_fetch_array($query);
+          print_r($riga);
       break;
       case "RPC":
 

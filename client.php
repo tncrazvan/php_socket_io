@@ -26,16 +26,16 @@ echo "\nConnection enstablished";
 
 //invio diversi messaggi al server
 
-/*
+
 $txt = new TextMessage64("Hello world!");
 $txt->send_to($socket);
-*/
 
 
 
+/*
 $file=new File64('./test-file.jpg');
 $file->send_to($socket);
-
+*/
 
 
 socket_close($socket);
