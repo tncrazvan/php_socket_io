@@ -16,7 +16,7 @@ echo "\nSocket created";
 //da modificare per estrare un indirizzo ip
 //valido attraverso un domain name invece di
 //usare un hard-typing dell'indirizzo singolo
-if(!socket_connect($socket,"151.40.241.114",5000)){
+if(!socket_connect($socket,gethostbyname("glorep2test.zapto.org"),5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nSocket can't connect: [$errorcode] $errormsg");
@@ -26,7 +26,7 @@ echo "\nConnection enstablished";
 
 //invio diversi messaggi al server
 
-$txt = new TextMessage64("Hello world!");
-$txt->send_to($socket);
+$txt1 = new TextMessage64("Hello world 1!");
+$txt1->send_to($socket);
 
 socket_close($socket);

@@ -54,10 +54,9 @@ while($allowed_to_run){
 	//		esempio: accetto solo i client che sono
 	//		sotto il dominio di unipg.it
 	$client=socket_accept($socket);
-	//socket_set_timeout($client, 0);
 	//ServerReader crea un Reader64 (utils/Reader64.php)
 	//Il quale a sua volta crea un Thread in cui legge i
-	//messaggi del client rispettivo
+	//messaggi del client rispettivo, 2048 byte alla volta
 	$sr=new ServerReader64($client,2048);
 
 	//eseguo il Thread
