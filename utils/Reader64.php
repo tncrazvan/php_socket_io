@@ -12,6 +12,7 @@ abstract class Reader64 extends Thread{
           //risultato del messaggio finale (tutta la stringa letta a termine comunicazione)
           $result="";
   public function Reader64($socket,$bytes){
+
     //salvo il socket del ricevente
     $this->socket=$socket;
     //salvo il numero di byte da leggere per ogni pezzo di stringa
@@ -41,10 +42,12 @@ abstract class Reader64 extends Thread{
           $this->result.=$line;
         }
     }while($line);
+    
     //funzione di richiamo (controlla utils/ServerReader64.php)
-    $this->callback(base64_decode($this->result),$this->address,$this->port);
+    $this->callback($this->socket,base64_decode($this->result),$this->address,$this->port);
+
   }
 
   //funzione di richiamo (controlla utils/ServerReader64.php)
-  abstract protected function callback($result,$address,$port);
+  abstract protected function callback($socket,$result,$address,$port);
 }

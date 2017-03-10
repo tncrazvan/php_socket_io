@@ -29,8 +29,9 @@ class ServerReader64 extends Reader64{
 
   */
 
-  protected function callback($result,$address,$port){
+  protected function callback($socket,$result,$address,$port){
     //callback code
+    
     $data=json_decode($result,true);
 
     print("\nTipo del contenuto: ".$data["content-type"]);
@@ -45,16 +46,26 @@ class ServerReader64 extends Reader64{
       case "text-plain":
           print("\nRESULT: ".$data["content64"]);
           echo "\n";
-          $db=new DBConnection("127.0.0.1","root","root","test");
-          $query=$db->query("select * from test_table;");
-          $riga=mysqli_fetch_array($query);
-          print_r($riga);
-      break;
-      case "RPC":
+          $db=new DBConnection("79.53.185.231","raz","raz","test",3306);
+          $query=$db->query("select * from test_table order by id desc limit 5");
+          echo "1";
+          $tmp="";
+          while($riga=mysqli_fetch_array($query)){
+            $tmp.=$riga["id"];
+          }
 
+          echo "\n".sha1($tmp);
+          $t=time();
+          //echo "\n----------------------\nCONNESSIONE: $t\n--------------------------\n";
+          //echo "\nERRORE: ".$db->get_connect_error();
+      break;
+      case "insert-notice":
+
+        $db = new DBConnection("127.0.0.1", "root", "root" , "test");
+        $time=time();
+        $db->query("insert into test_table values(null,$time);");
       break;
     }
-
 
 
   }

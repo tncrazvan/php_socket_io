@@ -5,16 +5,18 @@ class DBConnection{
           $user,
           $password,
           $db,
+          $port,
           $query_string_history,
           $query_index,
           $last_error,
           $current_index;
-  public function __construct($host,$user,$password,$db){
-    $this->mysqli=new mysqli($host,$user,$password,$db);
+  public function __construct($host,$user,$password,$db,$port){
+    $this->mysqli=mysqli_connect($host,$user,$password,$db,$port);
     $this->host=$host;
     $this->user=$user;
     $this->password=$password;
     $this->db=$db;
+    $this->port=$port;
     /***
       Inizializzazione variabili utili
     ***/
@@ -30,7 +32,9 @@ class DBConnection{
     return $this->mysqli->query($string);
   }
 
-
+  public function get_connect_error(){
+    return $this->mysqli->connect_error;
+  }
   public function get_error(){
     return $this->mysqli->error;
   }
