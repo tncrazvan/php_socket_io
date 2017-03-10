@@ -1,10 +1,11 @@
 <?php
-require_once("./utils/Reader64.php");
-require_once("./utils/DBConnection.php");
+require_once("./utils/readers/Reader64.php");
+require_once("./utils/database/DBConnection.php");
+require_once("./utils/database/SyncTest.php");
 class ServerReader64 extends Reader64{
-  function ServerReader($socket,$bytes=1){
+  function ServerReader($sender_socket,$bytes=1){
     //istanzio l'oggetto attuale e chiamo il costruttore del parent astratto "Reader"
-    parent::Reader64($socket,$bytes);
+    parent::Reader64($sender_socket,$bytes);
   }
 
 
@@ -31,6 +32,7 @@ class ServerReader64 extends Reader64{
 
   protected function callback($result,$address,$port){
     //callback code
+
     $data=json_decode($result,true);
 
     print("\nTipo del contenuto: ".$data["content-type"]);
@@ -45,16 +47,16 @@ class ServerReader64 extends Reader64{
       case "text-plain":
           print("\nRESULT: ".$data["content64"]);
           echo "\n";
-          /*$db=new DBConnection("127.0.0.1","root","root","test");
-          $query=$db->query("select * from test_table;");
-          $riga=mysqli_fetch_array($query);
-          print_r($riga);*/
+          $test=new SyncTest();
+          $test->start();
       break;
-      case "RPC":
+      case "insert-notice":
 
+        $db = new DBConnection("127.0.0.1", "root", "root" , "test");
+        $time=time();
+        $db->query("insert into test_table values(null,$time);");
       break;
     }
-
 
 
   }

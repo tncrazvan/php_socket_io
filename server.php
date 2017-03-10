@@ -1,5 +1,5 @@
 <?php
-require_once("./utils/ServerReader64.php");
+require_once("./utils/readers/ServerReader64.php");
 
 //E' un flag che permette allo script di accettare
 //continuamente le richieste di connessione da parte dei client
@@ -13,9 +13,8 @@ require_once("./utils/ServerReader64.php");
 //						Fermare una specifica connessione è uno lavoro per socket_close($client),
 //						dove $client è il socket del client.
 $allowed_to_run=true;
-
 //creo un nuovo Thread
-if(!($socket=socket_create(AF_INET, SOCK_STREAM,0))){
+if(!($socket=socket_create(AF_INET, SOCK_STREAM,SOL_TCP))){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 
@@ -29,7 +28,7 @@ echo "\nSocket created";
 //NOTA: è diverso da socket_connect()
 //			socket_bind viene eseguito dal server
 //			mentre socket_connect viene eseguito dal client
-if(!socket_bind($socket,"127.0.0.1",5000)){
+if(!socket_bind($socket,"192.168.0.75",5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nCould not bind socket: [$errorcode] $errormsg");
@@ -39,26 +38,27 @@ echo "\nSocked bind OK";
 
 //Metto il a disposizione il mio socket per i
 //client che si vogliono connettere (listening)
-if(!socket_listen($socket,10)){
+if(!socket_listen($socket,10000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nSocket can't listen:  [$errorcode] $errormsg");
 }
 echo "\nSocket is now listening...";
 
+
 //finché $allowed_to_run=true...
 while($allowed_to_run){
-
+	echo "\nStarting thread...";
 	//... accetto le richieste del client
 	//NOTA: da modificare per filtrare i client
 	//		esempio: accetto solo i client che sono
 	//		sotto il dominio di unipg.it
 	$client=socket_accept($socket);
-
+	//socket_set_timeout($client, 0);
 	//ServerReader crea un Reader64 (utils/Reader64.php)
 	//Il quale a sua volta crea un Thread in cui legge i
 	//messaggi del client rispettivo
-	$sr=new ServerReader64($client,1);
+	$sr=new ServerReader64($client,2048);
 
 	//eseguo il Thread
 	$sr->start();
