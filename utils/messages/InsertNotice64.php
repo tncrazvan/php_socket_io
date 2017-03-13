@@ -1,6 +1,6 @@
 <?php
 
-class InsertNotice{
+class InsertNotice64{
   private $content64;
   public function __construct($content){
     $this->content64=$content;

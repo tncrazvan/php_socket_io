@@ -28,7 +28,7 @@ echo "\nSocket created";
 //NOTA: è diverso da socket_connect()
 //			socket_bind viene eseguito dal server
 //			mentre socket_connect viene eseguito dal client
-if(!socket_bind($socket,"192.168.0.75",5000)){
+if(!socket_bind($socket,"127.0.0.1",5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nCould not bind socket: [$errorcode] $errormsg");
