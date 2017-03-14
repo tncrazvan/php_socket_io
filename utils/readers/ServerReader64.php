@@ -35,7 +35,7 @@ class ServerReader64 extends Reader64{
 
     echo "\n$result";
 
-    /*
+
     $data=json_decode($result,true);
 
     print("\nTipo del contenuto: ".$data["content-type"]);
@@ -59,7 +59,7 @@ class ServerReader64 extends Reader64{
         $time=time();
         $db->query("insert into test_table values(null,$time);");
       break;
-    }*/
+    }
 
 
   }

@@ -22,11 +22,13 @@ if(!socket_connect($socket,"127.0.0.1",5000)){
 	die("\nSocket can't connect: [$errorcode] $errormsg");
 }
 
-echo "\nConnection enstablished";
-
+echo "\nConnection enstablished\n";
 //invio diversi messaggi al server
 
 $txt1 = new TextMessage64("Hello world 1!");
 $txt1->send_to($socket);
+
+
+
 
 socket_close($socket);
