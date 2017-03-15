@@ -1,8 +1,12 @@
 <?php
 class SyncTest extends Thread{
   public function run(){
+    $general_ini=parse_ini_file("./settings/general.ini");
+    echo "\n\n\n\n";
+    print_r($general_ini);
+    echo "\n\n\n\n";
     $local_time_old=0;
-    $mia_fed='unipg';
+    $mia_fed=$general_ini["federation_name"];
     $shared_db=new DBConnection("127.0.0.1","root","root","shared_test",3306);
     $local_db=new DBConnection("127.0.0.1","root","root","test",3306);
 
