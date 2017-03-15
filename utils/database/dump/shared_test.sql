@@ -19,7 +19,7 @@
 -- Current Database: `shared_test`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `shared_test` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE IF NOT EXISTS `shared_test` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
 USE `shared_test`;
 
