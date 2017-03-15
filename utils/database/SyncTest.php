@@ -13,26 +13,9 @@ class SyncTest extends Thread{
 
 
     $local_r1=mysqli_fetch_array($query);
-    /*
-    [
-      "id"=>13,
-      "time"=>1489142998
-
-    ]
-    */
-    $local_time=$local_r1["time"];
-    $local_old_time=$local_time;
-
-
-
-
-
     $shared_r1=mysqli_fetch_array($query2);
-    $shared_time=$shared_r1["time"];
 
 
-    echo "\nLOCAL: $local_time (".(mysqli_num_rows($query)).")";
-    echo "\nSHARED: $shared_time (".(mysqli_num_rows($query2)).")";
 
 
     if(mysqli_num_rows($query2)==0){
@@ -45,21 +28,15 @@ class SyncTest extends Thread{
         echo "$str";
         echo "\n----------------";
       }
-      $local_old_time=$local_time;
     }else{
-      if($local_time > $shared_time){
-        echo "\n###### LOCAL IS AHEAD ######";
-        $query_tmp=$local_db->query("select * from test_table where time > $shared_time;");
-        while($riga=mysqli_fetch_array($query_tmp)){
-          $str="insert into test_table values(null,".$riga["time"].",".$riga["id"].",'$mia_fed')";
+      if($local_r1["id"] > $shared_r1["remote_id"]){
+        $str="select * from test_table where id > ".$shared_r1["remote_id"].";";
+        $result=$local_db->query($str);
+        while($riga=mysqli_fetch_array($result)){
+          $str="insert into test_table values (null,".$riga["time"].",".$riga["id"].",'$mia_fed')";
           $shared_db->query($str);
-          echo "\n";
-          echo "$str";
-          echo "\n----------------";
+          echo "\n id ".$riga["id"]." inserted";
         }
-        $local_old_time=$local_time;
-      }else{
-        echo "\n##### LOCAL IS NOT BEHIND #####";
       }
     }
 
