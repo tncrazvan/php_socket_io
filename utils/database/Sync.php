@@ -37,14 +37,13 @@ class Sync extends Thread{
       }else if($local_r1["id"] > $shared_r1["remote_id"]){
           $this->upload_after_offset($shared_r1["remote_id"],$local_db,$shared_db,$my_fed);
       }else{
-        echo "\n\t Shared.db is up to date.";
+        echo "\n\tShared.db is up to date.";
       }
 
 
       //using $query3 and $query4 here (DOWNLOADING)
 
-      echo "\n\tMOST RECENT (NOT MINE) IN SHARED: ".$shared_r2["remote_id"].", ".$shared_r2["id_fd"];
-      echo "\n\tMOST RECENT (NOT MINE) IN LOCAL: ";
+
 
       if(mysqli_num_rows($query3)==0){
         echo "EMPTY";
@@ -52,6 +51,10 @@ class Sync extends Thread{
         $this->download_all($shared_db,$local_db,$my_fed);
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
         $this->download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
+        echo "\n\tMOST RECENT (NOT MINE) IN SHARED: ".$shared_r2["remote_id"].", ".$shared_r2["id_fd"];
+        echo "\n\tMOST RECENT (NOT MINE) IN LOCAL: ".$local_r2["remote_id"].", ".$local_r2["id_fd"];
+      }else{
+        echo "\n\tLocal.db is up to date.";
       }
 
 
@@ -68,7 +71,7 @@ class Sync extends Thread{
 
   //uploads data from left database (starting from row $offset_left) to right database
   private function upload_after_offset($offset_left,$db_left,$db_right,$my_fed){
-      $str="select * from test_table where id > $offset_left;";
+      $str="select * from test_table where id > $offset_left and id_fd like '$my_fed'";
       $result=$db_left->query($str);
       while($row=mysqli_fetch_array($result)){
         $str="insert into test_table values (null,".$row["time"].",".$row["id"].",'$my_fed')";
