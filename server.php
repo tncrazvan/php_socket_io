@@ -1,5 +1,10 @@
 <?php
 require_once("./utils/readers/ServerReader64.php");
+require_once("./utils/database/Sync.php");
+
+
+$sync = new Sync();
+$sync->start();
 
 /*
 	$allowed_to_run is a flag which allows the script to loop and accept client connection_status.
@@ -39,7 +44,6 @@ if(!socket_listen($socket,10000)){
 	die("\nSocket can't listen:  [$errorcode] $errormsg");
 }
 echo "\nSocket is now listening...";
-
 
 while($allowed_to_run){
 	echo "\nStarting thread...";

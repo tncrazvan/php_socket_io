@@ -27,8 +27,7 @@ class ServerReader64 extends Reader64{
       break;
 
       case "text-plain":
-          $test=new Sync();
-          $test->start();
+      
       break;
       case "insert-notice":
 
