@@ -38,7 +38,7 @@ abstract class Reader64 extends Thread{
         $line=@socket_read($this->sender_socket,$this->bytes);//MTU=2048
         //se il byte che ho letto è diverso da "|"...
         if($line){
-          echo "[$line]";
+          //echo "[$line]";
           //...lo appendo a $this->result
           $this->result.=$line;
         }

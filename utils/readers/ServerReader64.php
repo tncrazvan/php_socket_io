@@ -33,12 +33,10 @@ class ServerReader64 extends Reader64{
   protected function callback($result,$address,$port){
     //callback code
 
-    echo "\n$result";
-
 
     $data=json_decode($result,true);
 
-    print("\nTipo del contenuto: ".$data["content-type"]);
+    print("\nContent type: ".$data["content-type"]);
     switch($data["content-type"]){
       case "image-jpg":
         print("\nFile-short-name: ".$data["file-short-name"]);
@@ -48,8 +46,6 @@ class ServerReader64 extends Reader64{
       break;
 
       case "text-plain":
-          print("\nRESULT: ".$data["content64"]);
-          echo "\n";
           $test=new SyncTest();
           $test->start();
       break;
