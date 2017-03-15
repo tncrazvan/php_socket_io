@@ -1,39 +1,20 @@
 <?php
 require_once("./utils/readers/Reader64.php");
 require_once("./utils/database/DBConnection.php");
-require_once("./utils/database/SyncTest.php");
+require_once("./utils/database/Sync.php");
 class ServerReader64 extends Reader64{
   function ServerReader($sender_socket,$bytes=1){
-    //istanzio l'oggetto attuale e chiamo il costruttore del parent astratto "Reader"
+    //Instantiating the object and calling its parent's constructor "Reader" (which is a Thread)
     parent::Reader64($sender_socket,$bytes);
   }
-
-
-  //funzione di richiamo
-  //@override
-  //Questa funzione viene chiamata ogni volta che una comunicazione termina
-  /*
-  ESEMPIO:
-    CLIENT_1 :: prepara messaggio "ciao mondo!"
-    CLIENT_1 >> invia il messaggio preparato [CODIFICATO IN BASE64? = YES]
-
-    CLIENT_1 :: prepara messaggio "come va?"
-    CLIENT_1 >> invia il messaggio preparato [CODIFICATO IN BASE64? = YES]
-
-    CLIENT_1 :: prepara messaggio "|"
-    CLIENT_1 >> invia il messaggio preparato [CODIFICATO IN BASE64? = NO]
-        //IMPORTANTE:
-        //il carattere "|" indica la fine della comunicazione, perciò
-        //esso NON DEVE essere mai condificato in base64, perché la sua rappresentazione
-        //in caratteri alfabetici potrebbe essere alterata a fine trasmissione
-        //e il server continuerà ad ascoltare il canale di comunicazione a vuoto.
-
-  */
 
   protected function callback($result,$address,$port){
     //callback code
 
-
+    /*
+      converting json result into a php Array.
+      "true" attribute says the result is not an Object but an Array instead.
+    */
     $data=json_decode($result,true);
 
     print("\nContent type: ".$data["content-type"]);
@@ -46,7 +27,7 @@ class ServerReader64 extends Reader64{
       break;
 
       case "text-plain":
-          $test=new SyncTest();
+          $test=new Sync();
           $test->start();
       break;
       case "insert-notice":

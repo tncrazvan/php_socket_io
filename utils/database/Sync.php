@@ -1,5 +1,5 @@
 <?php
-class SyncTest extends Thread{
+class Sync extends Thread{
 
   public function run(){
     $general_ini=parse_ini_file("./settings/general.ini");
