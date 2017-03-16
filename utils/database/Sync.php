@@ -4,13 +4,13 @@ class Sync extends Thread{
 
 
   public function run(){
+    $shared_db=new DBConnection("127.0.0.1","root","root","shared_test",3306);
+    $local_db=new DBConnection("127.0.0.1","root","root","test",3306);
+    
     while(true){
       $general_ini=parse_ini_file("./settings/general.ini");
       $my_fed=$general_ini["federation_name"];
       $sleep_time=$general_ini["sleep"];
-
-      $shared_db=new DBConnection("127.0.0.1","root","root","shared_test",3306);
-      $local_db=new DBConnection("127.0.0.1","root","root","test",3306);
 
 
       $query1=$local_db->query("select * from test_table where id_fd like '$my_fed' order by id desc limit 1");
