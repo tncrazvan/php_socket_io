@@ -6,7 +6,7 @@ class Sync extends Thread{
   public function run(){
     $shared_db=new DBConnection("127.0.0.1","root","root","shared_test",3306);
     $local_db=new DBConnection("127.0.0.1","root","root","test",3306);
-    
+
     while(true){
       $general_ini=parse_ini_file("./settings/general.ini");
       $my_fed=$general_ini["federation_name"];
@@ -25,11 +25,15 @@ class Sync extends Thread{
 
 
       echo "\n\n\n############### Cheking... ################";
+
+
+
+
       //using $query1 and $query2 here (UPLOADING)
       if(mysqli_num_rows($query2)==0){
-        echo "\n\t>> TRYING TO POPULATE SHARED.DB FROM SKRATCH...";
+        echo "\n\t>>TRYING TO POPULATE SHARED.DB FROM SKRATCH...";
         if(mysqli_num_rows($query1)>0){
-          echo "\n\t\t>> POPULATING SHARED.DB";
+          echo "\n\t\t>>POPULATING SHARED.DB";
           $this->upload_all($local_db,$shared_db,$my_fed);
         }else{
           echo "\n\t\t>> LOCAL.DB HAS NO DATA, NOT GOING TO POPULATE SHARED.DB";
@@ -37,22 +41,20 @@ class Sync extends Thread{
       }else if($local_r1["id"] > $shared_r1["remote_id"]){
           $this->upload_after_offset($shared_r1["remote_id"],$local_db,$shared_db,$my_fed);
       }else{
-        echo "\n\tShared.db is up to date.";
+          echo "\n\tShared.db is up to date.";
       }
 
 
+
+
       //using $query3 and $query4 here (DOWNLOADING)
-
-
-
       if(mysqli_num_rows($query3)==0){
-        echo "EMPTY";
-        echo "\n\t\tDOWNLOADING ALL...";
+        echo "\n\t\t>>DOWNLOADING ALL...";
         $this->download_all($shared_db,$local_db,$my_fed);
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
         $this->download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
-        echo "\n\tMOST RECENT (NOT MINE) IN SHARED: ".$shared_r2["remote_id"].", ".$shared_r2["id_fd"];
-        echo "\n\tMOST RECENT (NOT MINE) IN LOCAL: ".$local_r2["remote_id"].", ".$local_r2["id_fd"];
+        echo "\n\tMOST RECENT (NOT MINE) IN SHARED: ".$shared_r2["remote_id"]." (".$shared_r2["update_counter"]."), ".$shared_r2["id_fd"];
+        echo "\n\tMOST RECENT (NOT MINE) IN LOCAL: ".$local_r2["remote_id"]." (".$local_r2["update_counter"]."), ".$local_r2["id_fd"];
       }else{
         echo "\n\tLocal.db is up to date.";
       }
@@ -76,16 +78,17 @@ class Sync extends Thread{
       while($row=mysqli_fetch_array($result)){
         $str="insert into test_table values (null,".$row["time"].",".$row["id"].",'$my_fed')";
         $db_right->query($str);
-        echo "\n\t>> id ".$row["id"]." uploaded";
+        echo "\n\t>>ROW ID ".$row["id"]." UPLOADED";
       }
   }
 
   //uploads data from left database to right database
   private function upload_all($db_left,$db_right,$my_fed){
-    $query_tmp=$db_left->query("select * from test_table where id > 0;");
+    $query_tmp=$db_left->query("select * from test_table where id > 0 and id_fd like '$my_fed';");
     while($row=mysqli_fetch_array($query_tmp)){
       $str="insert into test_table values(null,".$row["time"].",".$row["id"].",'$my_fed')";
       $db_right->query($str);
+      echo "\n\t\t\t>>ROW ID ".$row["id"]." UPLOADED";
     }
   }
 
@@ -93,7 +96,7 @@ class Sync extends Thread{
   private function download_after_offset($offset,$db_left,$db_right,$my_fed){
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
-      echo "\n\t\t\t>> ROW ID: ".$row["id"];
+      echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
       $string="insert into test_table values(null,".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
       $db_right->query($string);
     }
@@ -102,9 +105,8 @@ class Sync extends Thread{
   private function download_all($db_left,$db_right,$my_fed){
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed';");
     while($row=mysqli_fetch_array($query)){
-      echo "\n\t\t\t>> ROW ID: ".$row["id"];
+      echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
       $string="insert into test_table values(null,".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
-      echo "\n\t\t\t$string";
       $db_right->query($string);
     }
   }
