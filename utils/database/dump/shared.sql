@@ -37,7 +37,7 @@ CREATE TABLE `test_table` (
   `id_fd` varchar(254) DEFAULT NULL,
   `action` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +46,7 @@ CREATE TABLE `test_table` (
 
 LOCK TABLES `test_table` WRITE;
 /*!40000 ALTER TABLE `test_table` DISABLE KEYS */;
-INSERT INTO `test_table` VALUES (207,1489142991,34,'unipg',0),(208,1489142992,35,'unipg',0),(209,1489142992,36,'unipg',0),(210,1489142998,37,'unipg',0),(211,1489143000,1,'unimil',0),(213,1489143000,3,'unimil',0),(224,1489142666,33,'unipg',1),(225,1489143000,2,'unimil',1);
+INSERT INTO `test_table` VALUES (207,1489142991,34,'unipg',0),(208,1489142992,35,'unipg',0),(209,1489142992,36,'unipg',0),(210,1489142998,37,'unipg',0),(211,1489143000,1,'unimil',0),(213,1489143000,3,'unimil',0),(225,1489143000,2,'unimil',1),(229,1489142668,33,'unipg',1);
 /*!40000 ALTER TABLE `test_table` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -59,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-17 18:19:47
+-- Dump completed on 2017-03-17 18:51:46
