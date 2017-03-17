@@ -19,9 +19,9 @@
 -- Current Database: `test`
 --
 
-CREATE DATABASE  IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE IF NOT EXISTS `local` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-USE `test`;
+USE `local`;
 
 --
 -- Table structure for table `test_table`
@@ -46,7 +46,7 @@ CREATE TABLE `test_table` (
 
 LOCK TABLES `test_table` WRITE;
 /*!40000 ALTER TABLE `test_table` DISABLE KEYS */;
-INSERT INTO `test_table` VALUES (33,1489142665,'unipg',0,0),(34,1489142991,'unipg',0,0),(35,1489142992,'unipg',0,0),(36,1489142992,'unipg',0,0),(37,1489142998,'unipg',0,0),(44,1489143005,'unimil',1,172),(45,1489143009,'unimil',2,174),(46,1489143011,'unimil',3,175),(47,1489143011,'unimil',4,202),(48,1489143015,'unimil',5,203),(49,1489143015,'unimil',6,204),(50,1489143015,'unimil',7,205);
+INSERT INTO `test_table` VALUES (33,1489142665,'unipg',0,0),(34,1489142991,'unipg',0,0),(35,1489142992,'unipg',0,0),(36,1489142992,'unipg',0,0),(37,1489142998,'unipg',0,0);
 /*!40000 ALTER TABLE `test_table` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -59,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-15 13:00:36
+-- Dump completed on 2017-03-17 14:12:45
