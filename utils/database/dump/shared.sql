@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Linux (x86_64)
 --
--- Host: localhost    Database: shared_test
+-- Host: localhost    Database: shared
 -- ------------------------------------------------------
 -- Server version	5.7.17-0ubuntu0.16.04.1
 
@@ -16,10 +16,10 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `shared_test`
+-- Current Database: `shared`
 --
 
-CREATE DATABASE IF NOT EXISTS `shared` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `shared` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
 USE `shared`;
 
@@ -35,8 +35,9 @@ CREATE TABLE `test_table` (
   `time` int(11) NOT NULL DEFAULT '0',
   `remote_id` int(11) NOT NULL,
   `id_fd` varchar(254) DEFAULT NULL,
+  `action` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=206 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +46,7 @@ CREATE TABLE `test_table` (
 
 LOCK TABLES `test_table` WRITE;
 /*!40000 ALTER TABLE `test_table` DISABLE KEYS */;
-INSERT INTO `test_table` VALUES (172,1489143005,1,'unimil'),(174,1489143009,2,'unimil'),(175,1489143011,3,'unimil'),(202,1489143011,4,'unimil'),(203,1489143015,5,'unimil'),(204,1489143015,6,'unimil'),(205,1489143015,7,'unimil');
+INSERT INTO `test_table` VALUES (207,1489142991,34,'unipg',0),(208,1489142992,35,'unipg',0),(209,1489142992,36,'unipg',0),(210,1489142998,37,'unipg',0),(211,1489143000,1,'unimil',0),(213,1489143000,3,'unimil',0),(224,1489142666,33,'unipg',1),(225,1489143000,2,'unimil',1);
 /*!40000 ALTER TABLE `test_table` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-17 14:12:58
+-- Dump completed on 2017-03-17 18:19:47
