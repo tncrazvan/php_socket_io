@@ -100,8 +100,9 @@ class Sync extends Thread{
     }
   }
 
-  private function update_all($db_left,$db_right,$my_fed){
-    $str="select * from update_log";
+
+  private function update_after_offset($offset_left,$db_left,$db_right,$my_fed){
+    $str="select * from update_log where id > $offset_left";
     $query=$db_left->query($str);
     while($row=mysqli_fetch_array($query)){
       $db_left->query("insert into tmp_update_log(id,local_id) values(".$row["id"].",".$row["local_id"].")");
@@ -112,6 +113,10 @@ class Sync extends Thread{
       $db_right->query("insert into test_table(time,remote_id,id_fd,action) values(".$u["time"].",".$u["id"].",'".$u["id_fd"]."',1)");
       echo "\n\t\t\t>>ROW ID: ".$u["id"];
     }
+  }
+
+  private function update_all($db_left,$db_right,$my_fed){
+    $this->upload_after_offset(0,$db_left,$db_right,$my_fed);
   }
 
   //uploads data from left database (starting from row $offset_left) to right database
@@ -127,12 +132,7 @@ class Sync extends Thread{
 
   //uploads data from left database to right database
   private function upload_all($db_left,$db_right,$my_fed){
-    $query_tmp=$db_left->query("select * from test_table where id_fd like '$my_fed';");
-    while($row=mysqli_fetch_array($query_tmp)){
-      $str="insert into test_table(time,remote_id,id_fd) values(".$row["time"].",".$row["id"].",'$my_fed')";
-      $db_right->query($str);
-      echo "\n\t\t\t>>ROW ID ".$row["id"]." UPLOADED";
-    }
+    $this->upload_after_offset(0,$db_left,$db_right,$my_fed);
   }
 
 
@@ -146,40 +146,44 @@ class Sync extends Thread{
   }
 
   private function download_all($db_left,$db_right,$my_fed){
-    $query=$db_left->query("select * from test_table where id_fd not like '$my_fed';");
-    while($row=mysqli_fetch_array($query)){
-      echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
-      $string="insert into test_table(time,id_fd,remote_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
-      $db_right->query($string);
+    $this->download_after_offset(0,$db_left,$db_right,$my_fed);
+  }
+
+  private function getLastTmpUpdateLog($local_db){
+    $tmp_str="select * from tmp_update_log order by id desc limit 1";
+    $tmp_query=$local_db->query($tmp_str);
+    if(mysqli_num_rows($tmp_query)==0){
+      return null;
+    }else{
+      return mysqli_fetch_array($tmp_query);
+    }
+  }
+
+  private function getLastUpdateLog($local_db){
+    $str="select * from update_log order by id desc limit 1";
+    $query=$local_db->query($str);
+    if(mysqli_num_rows($query)==0){
+      return null;
+    }else{
+      return mysqli_fetch_array($query);
     }
   }
 
   private function check_update_log($db_left,$db_right,$my_fed){
     $result=array();
     //saving the last row of the temporary table (tmp_update_log) into an array
-    $tmp_str="select * from tmp_update_log order by id desc limit 1";
-    $tmp_query=$db_left->query($tmp_str);
-    if(mysqli_num_rows($tmp_query)==0){
-      $tmp_last_update=null;
-    }else{
-      $tmp_last_update=mysqli_fetch_array($tmp_query);
-    }
+    $tmp_last_update=$this->getLastTmpUpdateLog($db_left);
 
 
     //fetching the last row from the actual update_log table
-    $str="select * from update_log order by id desc limit 1";
-    $query=$db_left->query($str);
-    if(mysqli_num_rows($query)==0){
-      $last_update=null;
-    }else{
-      $last_update=mysqli_fetch_array($query);
-    }
+    $last_update=$this->getLastUpdateLog($db_left);
 
 
 
-    echo "\n\n\n\t[TMP_LOG: "
+
+    echo "\n\n\n\t[TMP_UPDATE_LOG: "
       .(is_null($tmp_last_update["id"])?null:$tmp_last_update["id"])
-      ."] - [LOG: "
+      ."] - [UPDATE_LOG: "
       .(is_null($last_update["id"])?null:$last_update["id"])
       ."]";
 
@@ -188,6 +192,10 @@ class Sync extends Thread{
           echo "\n\t\t>>Updating all...";
           $this->update_all($db_left,$db_right,$my_fed);
         }
+      }else if($last_update["id"] > $tmp_last_update["id"]){
+          echo "\n\t\t>>Updating from offset: ".$tmp_last_update["id"];
+          $this->update_after_offset($tmp_last_update["id"],$db_left,$db_right,$my_fed);
       }
+
   }
 }
