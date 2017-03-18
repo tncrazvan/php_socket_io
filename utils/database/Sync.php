@@ -87,7 +87,7 @@ class Sync extends Thread{
     echo "\nLocal and Shared db connections closed";
   }
 
-  private function flush_updates(/*local*/$db_left,/*shared*/$db_right,$my_fed){
+  private function flush_updates($db_left,$db_right,$my_fed){
     $str="select * from test_table where action=1 and id_fd not like '$my_fed'";
     $query=$db_right->query($str);
     while($row=mysqli_fetch_array($query)){
