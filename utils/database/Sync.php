@@ -17,7 +17,7 @@ class Sync extends Thread{
       $query1=$local_db->query("select * from test_table where id_fd like '$my_fed' order by id desc limit 1");
       $query2=$shared_db->query("select * from test_table where id_fd like '$my_fed' order by remote_id desc limit 1");
       $query3=$local_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
-      $query4=$shared_db->query("select * from test_table where id_fd not like '$my_fed' order by remote_id desc limit 1");
+      $query4=$shared_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
       $query5=$shared_db->query("select * from test_table where id_fd not like '$my_fed' and action = 1 order by id desc limit 1");
 
 
@@ -41,9 +41,9 @@ class Sync extends Thread{
           echo "\n\t\t>>LOCAL.DB HAS NO DATA, NOT GOING TO POPULATE SHARED.DB";
         }
       }else if($local_r1["id"] > $shared_r1["remote_id"]){
-          $this->upload_after_offset($shared_r1["remote_id"],$local_db,$shared_db,$my_fed);
+        $this->upload_after_offset($shared_r1["remote_id"],$local_db,$shared_db,$my_fed);
       }else{
-          echo "\n\tShared.db is up to date.";
+        echo "\n\tShared.db is up to date.";
       }
 
 
@@ -69,12 +69,12 @@ class Sync extends Thread{
       $this->check_update_log($local_db,$shared_db,$my_fed);
 
       //using $query5 here (UPDATING EXISTING LOCAL ROWS FROM SHARED)
-      if(($num=mysqli_num_rows($query5))>0){
+      /*if(($num=mysqli_num_rows($query5))>0){
         echo "\n\t[SHARED.DB CONTAINS UPDATES ($num)]";
         $this->flush_updates($local_db,$shared_db,$my_fed);
       }else{
         echo "\n\t[NO UPDATES FOUND IN SHARED.DB]";
-      }
+      }*/
 
       echo "\n############### SLEEP $sleep_time... ################";
       sleep($sleep_time);
@@ -116,7 +116,7 @@ class Sync extends Thread{
   }
 
   private function update_all($db_left,$db_right,$my_fed){
-    $this->upload_after_offset(0,$db_left,$db_right,$my_fed);
+    $this->update_after_offset(0,$db_left,$db_right,$my_fed);
   }
 
   //uploads data from left database (starting from row $offset_left) to right database
@@ -139,6 +139,13 @@ class Sync extends Thread{
   private function download_after_offset($offset,$db_left,$db_right,$my_fed){
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
+      //if it's an update...
+      if($row["action"]==1){
+        //...delete the previews version of this row from db_right, and insert this current new one into db_right
+        //note: db_right is probably local.db
+        $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
+        $db_right->query($string);
+      }
       echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
       $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
       echo "\n\t\t\t\t$string";
