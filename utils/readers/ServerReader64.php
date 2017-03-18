@@ -17,23 +17,17 @@ class ServerReader64 extends Reader64{
     */
     $data=json_decode($result,true);
 
-    print("\nContent type: ".$data["content-type"]);
+    print("\n\t\tContent type: ".$data["content-type"]);
     switch($data["content-type"]){
       case "image-jpg":
-        print("\nFile-short-name: ".$data["file-short-name"]);
-        print("\nFile-extension: ".$data["file-extension"]);
+        print("\n\t\tFile-short-name: ".$data["file-short-name"]);
+        print("\n\t\tFile-extension: ".$data["file-extension"]);
         echo "\n";
-        file_put_contents($data["file-short-name"]."-copy.".$data["file-extension"], base64_decode($data["content64"]));
+        file_put_contents("./res/".$data["file-short-name"].".".$data["file-extension"], base64_decode($data["content64"]));
       break;
 
       case "text-plain":
-      
-      break;
-      case "insert-notice":
-
-        $db = new DBConnection("127.0.0.1", "root", "root" , "test");
-        $time=time();
-        $db->query("insert into test_table values(null,$time);");
+        echo "\n\t\tCLIENT SAYS: ".$data["content64"];
       break;
     }
 

@@ -38,23 +38,26 @@ echo "\nSocked bind OK";
 /*
 	Sarting to listen for connections (not blocking call)
 */
-if(!socket_listen($socket,10000)){
+if(!socket_listen($socket,5000)){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nSocket can't listen:  [$errorcode] $errormsg");
 }
-echo "\nSocket is now listening...";
 
 while($allowed_to_run){
-	echo "\nStarting thread...";
 	//accepting 1 incoming connection
 	$client=socket_accept($socket);
-	//ServerReader crea un Reader64 (utils/Reader64.php)
-	//Il quale a sua volta crea un Thread in cui legge i
-	//messaggi del client rispettivo, 2048 byte alla volta
-	$sr=new ServerReader64($client,2048);
+	/*
+		ServerReader64 creates a Reader64, which in turn creates a Thread
+		which will read the client's message in chunks of 2048 bytes
+	*/
+	$sr=new ServerReader64($client/*client's socket*/,2048/*MTU*/);
 
-	//eseguo il Thread
+	//starting the reader (which is a thread)
 	$sr->start();
 }
+
+
+//closing my(server) socket
+socket_shutdown($socket);
 socket_close($socket);

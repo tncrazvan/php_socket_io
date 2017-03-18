@@ -1,53 +1,58 @@
 <<?php
 abstract class Reader64 extends Thread{
   private
-          //socket del ricevente
+          //socket of the receiver
           $sender_socket=null,
-          //indirizzo ip del mittente
+          //sender's ip address
           $address=null,
-          //porta del mittente
+          //sender's port
           $port=null,
-          //numero di byte da leggere
-          $bytes,
-          //risultato del messaggio finale (tutta la stringa letta a termine comunicazione)
+          //number of bytes to read at once
+          $mtu,
+          //result of the final message (the whole message, not just a chunk of N bytes)
           $result="";
-  public function Reader64($sender_socket,$bytes){
+  public function Reader64($sender_socket,$mtu){
 
-    //salvo il socket del ricevente
+    //saving sender's socket
     $this->sender_socket=$sender_socket;
-    //salvo il numero di byte da leggere per ogni pezzo di stringa
-    $this->bytes=$bytes;
+    //saving number of bytes to read each iteration
+    $this->mtu=$mtu;
   }
 
   public function run(){
-    sleep(1);
+
+    //getting parameters from sender
     if(socket_getpeername($this->sender_socket,$address,$port)){
     	$this->address=$address;
       $this->port=$port;
     }
-
-    echo "\nThread started";
+    echo "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    echo "\n\t-> Connected to client $this->address:$this->port";
     $this->result="";
 
-    echo "\n";
+    //echo "\n\n";
     $i=0;
-    //leggo una volta e continuo a leggere se il mittente scrive qualsiasi cosa diversa da "|"
+    //read once, then keep reading if the sender is still sending data
     do{
         $i++;
-        //leggo 204s byte e lo salvo in $line
-        $line=@socket_read($this->sender_socket,$this->bytes);//MTU=2048
-        //se il byte che ho letto è diverso da "|"...
+        //reading 2048 bytes at once (check server.php line 55)
+        $line=@socket_read($this->sender_socket,$this->mtu);//MTU=2048
+        //if the chunk that I'm reading contains anything
         if($line){
           //echo "[$line]";
-          //...lo appendo a $this->result
+          //append it to the final result
           $this->result.=$line;
         }
     }while($line);
-    //funzione di richiamo (controlla utils/ServerReader64.php)
+    //calback method.This is just a quality of life choice,
+    //the body of this abstract method is defined in ./utils/readers/ServerReader64.php
     $this->callback(base64_decode($this->result),$this->address,$this->port);
-    echo "\nThread ended";
+    socket_shutdown($this->sender_socket);
+    socket_close($this->sender_socket);
+    echo "\n\t<- Connection ended";
+    echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
   }
 
-  //funzione di richiamo (controlla utils/ServerReader64.php)
+  //callback method
   abstract protected function callback($result,$address,$port);
 }

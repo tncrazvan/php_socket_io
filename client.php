@@ -30,5 +30,5 @@ $txt1->send_to($socket);
 
 
 
-
+socket_shutdown($socket);
 socket_close($socket);

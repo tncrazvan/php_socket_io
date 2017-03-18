@@ -8,8 +8,11 @@ class TextMessage64{
   }
 
   public function send_to($socket){
+
     $data
+    //encoding everything in base64
     =base64_encode(
+      //encoding the array in json
       json_encode(
         array(
           "content-type"=>"text-plain",
