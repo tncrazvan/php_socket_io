@@ -19,7 +19,7 @@ USE `local`;
 -- Dump della struttura di tabella local.test_table
 CREATE TABLE IF NOT EXISTS `test_table` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `time` int(11) unsigned NOT NULL DEFAULT '0',
+  `time` int(10) unsigned NOT NULL DEFAULT '0',
   `id_fd` varchar(254) NOT NULL,
   `remote_id` int(10) unsigned NOT NULL DEFAULT '0',
   `shared_id` int(10) unsigned NOT NULL DEFAULT '0',
