@@ -20,9 +20,8 @@ class ServerReader64 extends Reader64{
     print("\n\t\tContent type: ".$data["content-type"]);
     switch($data["content-type"]){
       case "image-jpg":
-        print("\n\t\tFile-short-name: ".$data["file-short-name"]);
-        print("\n\t\tFile-extension: ".$data["file-extension"]);
-        echo "\n";
+        print("\n\t\tFile-short-name: \"".$data["file-short-name"]."\"");
+        print("\n\t\tFile-extension: \"".$data["file-extension"]."\"");
         file_put_contents("./res/".$data["file-short-name"].".".$data["file-extension"], base64_decode($data["content64"]));
       break;
 

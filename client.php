@@ -1,34 +1,6 @@
 <?php
-require_once("./utils/messages/TextMessage64.php");
-require_once("./utils/messages/File64.php");
+require_once("./utils/writers/TextWriter64.php");
+require_once("./utils/writers/FileWriter64.php");
 
-
-//creazione socket
-if(!($socket=socket_create(AF_INET, SOCK_STREAM,SOL_TCP))){
-	$errorcode=socket_last_error();
-	$errormsg=socket_strerror($errorcode);
-	die("\nSocket couldn't be created: [$errocode] $errormsg");
-}
-
-echo "\nSocket created";
-
-//connessione al server 127.0.0.1:50000
-//da modificare per estrare un indirizzo ip
-//valido attraverso un domain name invece di
-//usare un hard-typing dell'indirizzo singolo
-if(!socket_connect($socket,"127.0.0.1",5000)){
-	$errorcode=socket_last_error();
-	$errormsg=socket_strerror($errorcode);
-	die("\nSocket can't connect: [$errorcode] $errormsg");
-}
-
-echo "\nConnection enstablished\n";
-//invio diversi messaggi al server
-
-$txt1 = new TextMessage64("Hello world 1!");
-$txt1->send_to($socket);
-
-
-
-socket_shutdown($socket);
-socket_close($socket);
+(new TextWriter64("hello","127.0.0.1",5000))->start();
+(new FileWriter64("./test-file.jpg","127.0.0.1",5000))->start();
