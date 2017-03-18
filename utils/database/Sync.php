@@ -68,14 +68,6 @@ class Sync extends Thread{
 
       $this->check_update_log($local_db,$shared_db,$my_fed);
 
-      //using $query5 here (UPDATING EXISTING LOCAL ROWS FROM SHARED)
-      /*if(($num=mysqli_num_rows($query5))>0){
-        echo "\n\t[SHARED.DB CONTAINS UPDATES ($num)]";
-        $this->flush_updates($local_db,$shared_db,$my_fed);
-      }else{
-        echo "\n\t[NO UPDATES FOUND IN SHARED.DB]";
-      }*/
-
       echo "\n############### SLEEP $sleep_time... ################";
       sleep($sleep_time);
 
@@ -177,6 +169,26 @@ class Sync extends Thread{
     }
   }
 
+
+  //IMPORTANT
+  /*
+    [MY SERVER]
+    check_update_log() iterates through tables tmp_update_log and update_log, compares them,
+    and if update_log is ahead of tmp_update_log, it will start copying the missing data
+    from update_log to tmp_update_log, while doing so, for each row, it will push
+    updates to shared.db and at the same time the old rows from shared.db will be
+    deleted. It simulates and update on the shared.db.
+
+    [OTHER SERVERS]
+    When other servers will try to download something new from the shared.db
+    They will see the flag "1" on the action attribute on the rows,
+    they will automatically get the row, and delete from their local.db
+    rvery row with that same remote_id and same id_fd, doing so they are
+    basically deleting every trace of that particular remote_id,
+    then, they will make a new insert into the local.db, using the new data
+    that has been fetched from shared.db.
+    This whole process is implemented in the download_after_offset() method. Check it.
+  */
   private function check_update_log($db_left,$db_right,$my_fed){
     $result=array();
     //saving the last row of the temporary table (tmp_update_log) into an array
