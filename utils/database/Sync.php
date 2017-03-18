@@ -140,7 +140,8 @@ class Sync extends Thread{
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
       echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
-      $string="insert into test_table(time,id_fd,remote_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
+      $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
+      echo "\n\t\t\t\t$string";
       $db_right->query($string);
     }
   }
