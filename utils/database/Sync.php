@@ -77,19 +77,6 @@ class Sync extends Thread{
     echo "\nLocal and Shared db connections closed";
   }
 
-  private function flush_updates($db_left,$db_right,$my_fed){
-    $str="select * from test_table where action=1 and id_fd not like '$my_fed'";
-    $query=$db_right->query($str);
-    while($row=mysqli_fetch_array($query)){
-      $str2="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id=".$row["remote_id"];
-      $query2=$db_left->query($str2);
-      $str3="insert into test_table(time,id_fd,remote_id,shared_id) "
-            ."values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].")";
-      $db_left->query($str3);
-      echo "\n\t\t>>ROW ID: ".$row["remote_id"]." (".$row["id_fd"].")";
-    }
-  }
-
 
   private function update_after_offset($offset_left,$db_left,$db_right,$my_fed){
     $str="select * from update_log where id > $offset_left";
