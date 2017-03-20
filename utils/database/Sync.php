@@ -60,8 +60,6 @@ class Sync extends Thread{
         }
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
         $this->download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
-        echo "\n\tMOST RECENT (NOT MINE) IN SHARED: ".$shared_r2["remote_id"].", ".$shared_r2["id_fd"];
-        echo "\n\tMOST RECENT (NOT MINE) IN LOCAL: ".$local_r2["remote_id"].", ".$local_r2["id_fd"];
       }else{
         echo "\n\tLocal.db is up to date.";
       }
@@ -97,13 +95,19 @@ class Sync extends Thread{
     $str="select * from update_log where id > $offset_left";
     $query=$db_left->query($str);
     while($row=mysqli_fetch_array($query)){
-      $db_left->query("insert into tmp_update_log(id,local_id) values(".$row["id"].",".$row["local_id"].")");
-      $str2="select * from test_table where id = ".$row["local_id"];
-      $query2=$db_left->query($str2);
-      $u=mysqli_fetch_array($query2);
-      $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$u["id"]);
-      $db_right->query("insert into test_table(time,remote_id,id_fd,action) values(".$u["time"].",".$u["id"].",'".$u["id_fd"]."',1)");
-      echo "\n\t\t\t>>ROW ID: ".$u["id"];
+      $r=mysqli_fetch_array($db_left->query("select id_fd from test_table where id=".$row["local_id"]));
+
+      if($r["id_fd"]!=$my_fed){
+        $db_left->query("delete from update_log where id=".$row["id"]);
+      }else{
+        $db_left->query("insert into tmp_update_log(id,local_id) values(".$row["id"].",".$row["local_id"].")");
+        $str2="select * from test_table where id = ".$row["local_id"];
+        $query2=$db_left->query($str2);
+        $u=mysqli_fetch_array($query2);
+        $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$u["id"]);
+        $db_right->query("insert into test_table(time,remote_id,id_fd,action) values(".$u["time"].",".$u["id"].",'".$u["id_fd"]."',1)");
+        echo "\n\t\t\t>>ROW ID: ".$u["id"];
+      }
     }
   }
 
