@@ -180,7 +180,7 @@ class Sync extends Thread{
     This whole process is implemented in the download_after_offset() method. Check it.
   */
   private function check_update_log($db_left,$db_right,$my_fed){
-    $result=array();
+
     //saving the last row of the temporary table (tmp_update_log) into an array
     $tmp_last_update=$this->getLastTmpUpdateLog($db_left);
 
@@ -201,6 +201,8 @@ class Sync extends Thread{
         if($last_update!=null){
           echo "\n\t\t>>Updating all...";
           $this->update_all($db_left,$db_right,$my_fed);
+        }else{
+          echo "\n\t\t>>No updates available";
         }
       }else if($last_update["id"] > $tmp_last_update["id"]){
           echo "\n\t\t>>Updating from offset: ".$tmp_last_update["id"];
