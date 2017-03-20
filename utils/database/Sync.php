@@ -18,7 +18,6 @@ class Sync extends Thread{
       $query2=$shared_db->query("select * from test_table where id_fd like '$my_fed' order by remote_id desc limit 1");
       $query3=$local_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
       $query4=$shared_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
-      $query5=$shared_db->query("select * from test_table where id_fd not like '$my_fed' and action = 1 order by id desc limit 1");
 
 
       $local_r1=mysqli_fetch_array($query1);
