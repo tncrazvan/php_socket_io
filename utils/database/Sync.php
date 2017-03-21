@@ -125,7 +125,7 @@ class Sync extends Thread{
         $d=mysqli_fetch_array($query2);
         $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$d["id"]);
         $db_right->query("insert into test_table(time,remote_id,id_fd,action) values(".$d["time"].",".$d["id"].", ".$d["id_fd"].",2)");
-        echo "\n\t\t\t>>ROW ID: ".$d["id"],
+        echo "\n\t\t\t>>ROW ID: ".$d["id"];
       }
     }
   }
