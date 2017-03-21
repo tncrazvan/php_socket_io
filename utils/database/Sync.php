@@ -102,8 +102,8 @@ class Sync extends Thread{
         $query2=$db_left->query($str2);
         $u=mysqli_fetch_array($query2);
         $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$u["id"]);
-        $db_right->query("insert into test_table(time,remote_id,id_fd,action) "
-                        ."values(".$u["time"].",".$u["id"].",'".$u["id_fd"]."',1)");
+        $db_right->query("insert into test_table(title,remote_id,id_fd,status) "
+                        ."values('".$u["title"]."',".$u["id"].",'".$u["id_fd"]."','".$u["status"]."')");
         echo "\n\t\t\t>>ROW ID: ".$u["id"];
       }
     }
@@ -120,8 +120,8 @@ class Sync extends Thread{
       $result=$db_left->query($str);
       while($row=mysqli_fetch_array($result)){
         if($row["status"]!='draft'){
-          $str="insert into test_table(time,remote_id,id_fd,status) "
-              ."values (".$row["time"].",".$row["id"].",'$my_fed',".$row["status"].")";
+          $str="insert into test_table(title,remote_id,id_fd,status) "
+              ."values ('".$row["title"]."',".$row["id"].",'$my_fed','".$row["status"]."')";
           $db_right->query($str);
           echo "\n\t\t\t>>ROW ID ".$row["id"]." UPLOADED";
         }
@@ -138,18 +138,18 @@ class Sync extends Thread{
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
       //if it's an update...
-      if($row["action"]==1){
-          //...delete the previews version of this row from db_right, and insert this current new one into db_right
-          //note: db_right is probably local.db
-          $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
-          $db_right->query($string);
-          echo "\n\t\t\t>>UPDATING::";
-        }
-        echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
-        $string="insert into test_table(time,id_fd,remote_id,shared_id,status) "
-                ."values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].",".$row["status"].");";
-        //echo "\n\t\t\t\t$string";
+      /*if($row["action"]==1){
+        //...delete the previews version of this row from db_right, and insert this current new one into db_right
+        //note: db_right is probably local.db
+        $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
         $db_right->query($string);
+        echo "\n\t\t\t>>UPDATING::";
+      }*/
+      echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
+      $string="insert into test_table(title,id_fd,remote_id,shared_id,status) "
+              ."values('".$row["title"]."','".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].",'".$row["status"]."');";
+      //echo "\n\t\t\t\t$string";
+      $db_right->query($string);
 
     }
   }
@@ -179,25 +179,6 @@ class Sync extends Thread{
   }
 
 
-  //IMPORTANT
-  /*
-    [MY SERVER]
-    check_update_log() iterates through tables tmp_update_log and update_log, compares them,
-    and if update_log is ahead of tmp_update_log, it will start copying the missing data
-    from update_log to tmp_update_log, while doing so, for each row, it will push
-    updates to shared.db and at the same time the old rows from shared.db will be
-    deleted. It simulates and update on the shared.db.
-
-    [OTHER SERVERS]
-    When other servers will try to download something new from the shared.db
-    They will see the flag "1" on the action attribute on the rows,
-    they will automatically get the row, and delete from their local.db
-    rvery row with that same remote_id and same id_fd, doing so they are
-    basically deleting every trace of that particular remote_id,
-    then, they will make a new insert into the local.db, using the new data
-    that has been fetched from shared.db.
-    This whole process is implemented in the download_after_offset() method. Check it.
-  */
   private function check_update_log($db_left,$db_right,$my_fed){
 
     //saving the last row of the temporary table (tmp_update_log) into an array
