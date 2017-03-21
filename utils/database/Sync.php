@@ -170,7 +170,7 @@ class Sync extends Thread{
           }
           echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
           $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
-          echo "\n\t\t\t\t$string";
+          //echo "\n\t\t\t\t$string";
           $db_right->query($string);
       }
     }
@@ -232,11 +232,11 @@ class Sync extends Thread{
 
 
 
-    echo "\n\n\n\t[TMP_UPDATE_LOG: "
+    /*echo "\n\n\n\t[TMP_UPDATE_LOG: "
       .(is_null($tmp_last_update["id"])?null:$tmp_last_update["id"])
       ."] - [UPDATE_LOG: "
       .(is_null($last_update["id"])?null:$last_update["id"])
-      ."]";
+      ."]";*/
 
       if($tmp_last_update==null){
         if($last_update!=null){
@@ -248,6 +248,8 @@ class Sync extends Thread{
       }else if($last_update["id"] > $tmp_last_update["id"]){
           echo "\n\t\t>>Updating after offset: ".$tmp_last_update["id"];
           $this->update_after_offset($tmp_last_update["id"],$db_left,$db_right,$my_fed);
+      }else{
+        echo "\n\t\t>>No updates available";
       }
 
   }
@@ -264,7 +266,7 @@ class Sync extends Thread{
   }
 
   private function getLastDeleteLog($local_db){
-    $str="select * from update_log order by id desc limit 1";
+    $str="select * from delete_log order by id desc limit 1";
     $query=$local_db->query($str);
     if(mysqli_num_rows($query)==0){
       return null;
@@ -277,11 +279,11 @@ class Sync extends Thread{
     $tmp_last_delete=$this->getLastTmpDeleteLog($db_left);
     $last_delete=$this->getlastDeleteLog($db_left);
 
-    echo "\n\n\n\t[TMP_DELETE_LOG:"
+    /*echo "\n\n\n\t[TMP_DELETE_LOG:"
     .(is_null($tmp_last_delete["id"])?null:$tmp_last_update["id"])
     ."] - [DELETE_LOG:"
     .(is_null($last_delete["id"])?null:$last_delete["id"])
-    ."]";
+    ."]";*/
 
     if($tmp_last_delete==null){
       if($last_delete!=null){
@@ -293,6 +295,8 @@ class Sync extends Thread{
     }else if($last_delete["id"] > $tmp_last_delete["id"]){
       echo "\n\t\t>>Deleting after offset: ".$tmp_last_delete["id"];
       $this->delete_after_offset($tmp_last_delete["id"],$db_left,$db_right,$my_fed);
+    }else{
+      echo "\n\t\t>>No deletes available";
     }
   }
 }

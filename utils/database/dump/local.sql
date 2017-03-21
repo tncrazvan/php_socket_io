@@ -82,6 +82,8 @@ CREATE TRIGGER `update_log` AFTER UPDATE ON `test_table` FOR EACH ROW insert int
 DELIMITER ;
 SET SQL_MODE=@OLDTMP_SQL_MODE;
 
+create trigger `delete_log` after delete on `test_table` for each row insert into delete_log(local_if) values(old.id);
+
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
