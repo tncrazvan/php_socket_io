@@ -166,7 +166,7 @@ class Sync extends Thread{
             //note: db_right is probably local.db
             $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
             $db_right->query($string);
-            echo "\n\t\t\t>>UPDATEING::"
+            echo "\n\t\t\t>>UPDATEING::";
           }
           echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
           $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
