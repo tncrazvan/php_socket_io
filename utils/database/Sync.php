@@ -134,17 +134,12 @@ class Sync extends Thread{
   }
 
 
-  private function download_after_offset($offset,$db_left,$db_right,$my_fed){
+  private function download_after_offset($offset,$db_left/*shared*/,$db_right/*local*/,$my_fed){
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
-      //if it's an update...
-      /*if($row["action"]==1){
-        //...delete the previews version of this row from db_right, and insert this current new one into db_right
-        //note: db_right is probably local.db
-        $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
-        $db_right->query($string);
-        echo "\n\t\t\t>>UPDATING::";
-      }*/
+      //deleting the entry if already exists and writing a new one using the same IDs and updated data (simulates an update query)
+      $db_right->query("delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id=".$row["remote_id"]);
+
       echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
       $string="insert into test_table(title,id_fd,remote_id,shared_id,status) "
               ."values('".$row["title"]."','".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].",'".$row["status"]."');";
