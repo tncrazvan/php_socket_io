@@ -283,8 +283,8 @@ class Sync extends Thread{
     .(is_null($last_delete["id"])?null:$last_delete["id"])
     ."]";
 
-    if($tmp_last_update==null){
-      if($last_update!=null){
+    if($tmp_last_delete==null){
+      if($last_delete!=null){
         echo "\n\t\t>>Deleting all...";
         $this->delete_all($db_left,$db_right,$my_fed);
       }else{
