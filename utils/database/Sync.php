@@ -65,6 +65,8 @@ class Sync extends Thread{
 
       $this->check_update_log($local_db,$shared_db,$my_fed);
 
+      $this->check_delete_log($local_db,$shared_db,$my_fed);
+
       echo "\n############### SLEEP $sleep_time... ################";
       sleep($sleep_time);
 
@@ -81,8 +83,13 @@ class Sync extends Thread{
     $str="select * from update_log where id > $offset_left";
     $query=$db_left->query($str);
     while($row=mysqli_fetch_array($query)){
+      /*
+        checking the id_fd of the current row
+      */
       $r=mysqli_fetch_array($db_left->query("select id_fd from test_table where id=".$row["local_id"]));
 
+      //checking if the id_fd is mine, if it is, I can update it, otherwise, delete the update attempt from my local db
+      //and skip this row update (IN SHORT: don't bother to query to the shared.db)
       if($r["id_fd"]!=$my_fed){
         $db_left->query("delete from update_log where id=".$row["id"]);
       }else{
@@ -99,6 +106,32 @@ class Sync extends Thread{
 
   private function update_all($db_left,$db_right,$my_fed){
     $this->update_after_offset(0,$db_left,$db_right,$my_fed);
+  }
+
+  private function delete_after_offset($offset_left,$db_left,$db_right,$my_fed){
+    $str="select * from update_log where id > $offset_left";
+    $query=$db_left->query($str);
+    while($row=mysqli_fetch_array($query)){
+      //checking the id_fd of the current row
+      $r=mysqli_fetch_array($db_left->query("select id_fd from test_table where id=".$row["local_id"]));
+
+      //is the id_fd equal to mine?
+      if($r["id_fd"]!=$my_fed){
+        $db_left->query("delete from delete_log where id=".$row["id"]);
+      }else{
+        $db_left->query("insert into tmp_delete_log(id,local_id) values(".$row["id"].",".$row["local_id"].")");
+        $str2="select * from test_table where id = ".$row["local_id"];
+        $query2=$db_left->query($str2);
+        $d=mysqli_fetch_array($query2);
+        $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$d["id"]);
+        $db_right->query("insert into test_table(time,remote_id,id_fd,action) values(".$d["time"].",".$d["id"].", ".$d["id_fd"].",2)");
+        echo "\n\t\t\t>>ROW ID: ".$d["id"],
+      }
+    }
+  }
+
+  private function delete_all($db_left,$db_right,$my_fed){
+    $this->delete_after_offset(0,$db_left,$db_right,$my_fed);
   }
 
   //uploads data from left database (starting from row $offset_left) to right database
@@ -121,17 +154,25 @@ class Sync extends Thread{
   private function download_after_offset($offset,$db_left,$db_right,$my_fed){
     $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
-      //if it's an update...
-      if($row["action"]==1){
-        //...delete the previews version of this row from db_right, and insert this current new one into db_right
-        //note: db_right is probably local.db
+      //if it's a delete...
+      if($row["action"]==2){
         $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
         $db_right->query($string);
+        echo "\n\t\t\t>>DELETING ROW ID: ".$row["remote_id"]."(".$row["id_fd"].")";
+      }else{
+        //if it's an update...
+        if($row["action"]==1){
+            //...delete the previews version of this row from db_right, and insert this current new one into db_right
+            //note: db_right is probably local.db
+            $string="delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id = ".$row["remote_id"];
+            $db_right->query($string);
+            echo "\n\t\t\t>>UPDATEING::"
+          }
+          echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
+          $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
+          echo "\n\t\t\t\t$string";
+          $db_right->query($string);
       }
-      echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
-      $string="insert into test_table(time,id_fd,remote_id,shared_id) values(".$row["time"].",'".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].");";
-      echo "\n\t\t\t\t$string";
-      $db_right->query($string);
     }
   }
 
@@ -205,9 +246,53 @@ class Sync extends Thread{
           echo "\n\t\t>>No updates available";
         }
       }else if($last_update["id"] > $tmp_last_update["id"]){
-          echo "\n\t\t>>Updating from offset: ".$tmp_last_update["id"];
+          echo "\n\t\t>>Updating after offset: ".$tmp_last_update["id"];
           $this->update_after_offset($tmp_last_update["id"],$db_left,$db_right,$my_fed);
       }
 
+  }
+
+
+  private function getLastTmpDeleteLog($local_db){
+    $tmp_str="select * from tmp_delete_log order by id desc limit 1";
+    $tmp_query=$local_db->query($tmp_str);
+    if(mysqli_num_rows($tmp_query)==0){
+      return null;
+    }else{
+      return mysqli_fetch_array($tmp_query);
+    }
+  }
+
+  private function getLastDeleteLog($local_db){
+    $str="select * from update_log order by id desc limit 1";
+    $query=$local_db->query($str);
+    if(mysqli_num_rows($query)==0){
+      return null;
+    }else{
+      return mysqli_fetch_array($query);
+    }
+  }
+
+  private function check_delete_log($db_left,$db_right,$my_fed){
+    $tmp_last_delete=$this->getLastTmpDeleteLog($db_left);
+    $last_delete=$this->getlastDeleteLog($db_left);
+
+    echo "\n\n\n\t[TMP_DELETE_LOG:"
+    .(is_null($tmp_last_delete["id"])?null:$tmp_last_update["id"])
+    ."] - [DELETE_LOG:"
+    .(is_null($last_delete["id"])?null:$last_delete["id"])
+    ."]";
+
+    if($tmp_last_update==null){
+      if($last_update!=null){
+        echo "\n\t\t>>Deleting all...";
+        $this->delete_all($db_left,$db_right,$my_fed);
+      }else{
+        echo "\n\t\t>>No deletes available";
+      }
+    }else if($last_delete["id"] > $tmp_last_delete["id"]){
+      echo "\n\t\t>>Deleting after offset: ".$tmp_last_delete["id"];
+      $this->delete_after_offset($tmp_last_delete["id"],$db_left,$db_right,$my_fed);
+    }
   }
 }

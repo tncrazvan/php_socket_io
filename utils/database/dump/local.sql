@@ -58,6 +58,19 @@ CREATE TABLE IF NOT EXISTS `update_log` (
   CONSTRAINT `FK_update_log_test_table` FOREIGN KEY (`local_id`) REFERENCES `test_table` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 
+
+create table if not exists delete_log(
+  id int(10) unsigned not null primary key AUTO_INCREMENT,
+  local_id int(10) unsigned not null,
+  FOREIGN key (local_id) references test_table(id)
+);
+
+create table if not exists tmp_delete_log(
+  id int(10) unsigned not null primary key auto_increment,
+  local_id int(10) unsigned not null,
+  FOREIGN key (local_id) references delete_log(local_id)
+);
+
 -- Dump dei dati della tabella local.update_log: ~10 rows (circa)
 /*!40000 ALTER TABLE `update_log` DISABLE KEYS */;
 /*!40000 ALTER TABLE `update_log` ENABLE KEYS */;
