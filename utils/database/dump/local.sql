@@ -78,11 +78,9 @@ create table if not exists tmp_delete_log(
 -- Dump della struttura di trigger local.update_log
 SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
 DELIMITER //
-CREATE TRIGGER `update_log` AFTER UPDATE ON `test_table` FOR EACH ROW insert into update_log(local_id) values(NEW.id)//
+CREATE TRIGGER `update_log` AFTER UPDATE ON `test_table` FOR EACH ROW insert into update_log(local_id,status) values(NEW.id,NEW.status)//
 DELIMITER ;
 SET SQL_MODE=@OLDTMP_SQL_MODE;
-
-create trigger `delete_log` after delete on `test_table` for each row insert into delete_log(local_if) values(old.id);
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
