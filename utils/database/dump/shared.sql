@@ -1,62 +1,82 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Linux (x86_64)
---
--- Host: localhost    Database: shared
--- ------------------------------------------------------
--- Server version	5.7.17-0ubuntu0.16.04.1
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Versione server:              5.5.32 - MySQL Community Server (GPL)
+-- S.O. server:                  Win32
+-- HeidiSQL Versione:            9.4.0.5125
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Current Database: `shared`
---
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `shared` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
+-- Dump della struttura del database shared
+CREATE DATABASE IF NOT EXISTS `shared` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `shared`;
 
---
--- Table structure for table `test_table`
---
+-- Dump della struttura di tabella shared.fed
+CREATE TABLE IF NOT EXISTS `fed` (
+  `id_fd` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_fd`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `test_table`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_table` (
+-- Dump dei dati della tabella shared.fed: ~2 rows (circa)
+/*!40000 ALTER TABLE `fed` DISABLE KEYS */;
+INSERT INTO `fed` (`id_fd`) VALUES
+	('unimil'),
+	('unipg');
+/*!40000 ALTER TABLE `fed` ENABLE KEYS */;
+
+-- Dump della struttura di tabella shared.shared_meta
+CREATE TABLE IF NOT EXISTS `shared_meta` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL DEFAULT 'unknown title',
   `remote_id` int(10) NOT NULL,
-  `id_fd` varchar(254) NOT NULL,
+  `id_fd` varchar(50) NOT NULL,
   `status` varchar(50) NOT NULL DEFAULT 'final',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=408 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `version` int(10) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `FK_shared_meta_fed` (`id_fd`),
+  KEY `FK_shared_meta_status` (`status`),
+  CONSTRAINT `FK_shared_meta_status` FOREIGN KEY (`status`) REFERENCES `status` (`status_name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_shared_meta_fed` FOREIGN KEY (`id_fd`) REFERENCES `fed` (`id_fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=434 DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `test_table`
---
+-- Dump dei dati della tabella shared.shared_meta: ~17 rows (circa)
+/*!40000 ALTER TABLE `shared_meta` DISABLE KEYS */;
+INSERT INTO `shared_meta` (`id`, `title`, `remote_id`, `id_fd`, `status`, `version`) VALUES
+	(211, 'unknown title', 1, 'unimil', 'final', 1),
+	(213, 'unknown title', 2, 'unimil', 'final', 1),
+	(263, 'unknown title', 3, 'unimil', 'final', 1),
+	(286, 'unknown title', 4, 'unimil', 'final', 1),
+	(304, 'unknown title', 5, 'unimil', 'final', 1),
+	(378, 'test title', 6, 'unimil', 'final', 1),
+	(382, 'test_title', 6, 'unimil', 'final', 1),
+	(424, 'unknown title', 6, 'unipg', 'final', 1),
+	(425, 'unknown title', 7, 'unipg', 'final', 1),
+	(426, 'unknown title', 8, 'unipg', 'final', 1),
+	(427, 'unknown title', 9, 'unipg', 'final', 1),
+	(428, 'unknown title', 10, 'unipg', 'final', 1),
+	(429, 'unknown title', 11, 'unipg', 'final', 1),
+	(433, 'unknown title3333', 12, 'unipg', 'final', 1);
+/*!40000 ALTER TABLE `shared_meta` ENABLE KEYS */;
 
-LOCK TABLES `test_table` WRITE;
-/*!40000 ALTER TABLE `test_table` DISABLE KEYS */;
-INSERT INTO `test_table` VALUES (211,'unknown title',1,'unimil','final'),(213,'unknown title',2,'unimil','final'),(263,'unknown title',3,'unimil','final'),(286,'unknown title',4,'unimil','final'),(304,'unknown title',5,'unimil','final'),(378,'test title',6,'unimil','final'),(382,'test_title',6,'unimil','final'),(402,'unknown title',33,'unipg','final'),(403,'unknown title',34,'unipg','final'),(404,'unknown title',35,'unipg','final'),(405,'unknown title',36,'unipg','final'),(406,'unknown title',37,'unipg','final'),(407,'unknown title',111,'unipg','final');
-/*!40000 ALTER TABLE `test_table` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+-- Dump della struttura di tabella shared.status
+CREATE TABLE IF NOT EXISTS `status` (
+  `status_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`status_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+-- Dump dei dati della tabella shared.status: ~3 rows (circa)
+/*!40000 ALTER TABLE `status` DISABLE KEYS */;
+INSERT INTO `status` (`status_name`) VALUES
+	('final'),
+	('revisited'),
+	('unavailable');
+/*!40000 ALTER TABLE `status` ENABLE KEYS */;
+
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2017-03-23 10:01:27

@@ -14,14 +14,16 @@ class Sync extends Thread{
       $sleep_time=$general_ini["sleep"];
 
 
-      $query1=$local_db->query("select * from test_table where id_fd like '$my_fed' order by id desc limit 1");
-      $query2=$shared_db->query("select * from test_table where id_fd like '$my_fed' order by remote_id desc limit 1");
-      $query3=$local_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
-      $query4=$shared_db->query("select * from test_table where id_fd not like '$my_fed' order by id desc limit 1");
+      $query1=$local_db->query("select * from local_meta order by id desc limit 1");
+      $query2=$shared_db->query("select * from shared_meta where id_fd like '$my_fed' order by remote_id desc limit 1");
+
+      $query3=$local_db->query("select * from shared_meta order by id desc limit 1");
+      $query4=$shared_db->query("select * from shared_meta where id_fd not like '$my_fed' order by id desc limit 1");
 
 
       $local_r1=mysqli_fetch_array($query1);
       $shared_r1=mysqli_fetch_array($query2);
+
       $local_r2=mysqli_fetch_array($query3);
       $shared_r2=mysqli_fetch_array($query4);
 
@@ -86,24 +88,20 @@ class Sync extends Thread{
     $query=$db_left->query($str);
     while($row=mysqli_fetch_array($query)){
       /*
-        checking the id_fd of the current row
+        checking the current "TO BE UPDATED" row is a draft, if it is, delete the commit and don't send it to the shared.db
       */
-      $r=mysqli_fetch_array($db_left->query("select id_fd,status  from test_table where id=".$row["local_id"]));
-
-      //checking if the id_fd is mine or ifit's draft, if it is,
-      //I can update it, otherwise, delete the update attempt from my local db
-      //and skip this row update (IN SHORT: don't bother to query to the shared.db)
-      if($r["id_fd"]!=$my_fed || $r["status"]=="draft"){
+      $r=mysqli_fetch_array($db_left->query("select status from local_meta where id=".$row["local_id"]));
+      if($r["status"]=="draft"){
         $db_left->query("delete from update_log where id=".$row["id"]);
       }else{
         //else update
         $db_left->query("insert into tmp_update_log(id,local_id) values(".$row["id"].",".$row["local_id"].")");
-        $str2="select * from test_table where id = ".$row["local_id"];
+        $str2="select * from local_meta where id = ".$row["local_id"];
         $query2=$db_left->query($str2);
         $u=mysqli_fetch_array($query2);
-        $db_right->query("delete from test_table where id_fd like '$my_fed' and remote_id = ".$u["id"]);
-        $db_right->query("insert into test_table(title,remote_id,id_fd,status) "
-                        ."values('".$u["title"]."',".$u["id"].",'".$u["id_fd"]."','".$u["status"]."')");
+        $db_right->query("delete from shared_meta where id_fd like '$my_fed' and remote_id = ".$u["id"]);
+        $db_right->query("insert into shared_meta(title,remote_id,id_fd,status,version) "
+                        ."values('".$u["title"]."',".$u["id"].",'".$my_fed."','".$u["status"]."',".$u["version"].")");
         echo "\n\t\t\t>>ROW ID: ".$u["id"];
       }
     }
@@ -116,12 +114,12 @@ class Sync extends Thread{
 
   //uploads data from left database (starting from row $offset_left) to right database
   private function upload_after_offset($offset_left,$db_left,$db_right,$my_fed){
-      $str="select * from test_table where id > $offset_left and id_fd like '$my_fed'";
+      $str="select * from local_meta where id > $offset_left";
       $result=$db_left->query($str);
       while($row=mysqli_fetch_array($result)){
         if($row["status"]!='draft'){
-          $str="insert into test_table(title,remote_id,id_fd,status) "
-              ."values ('".$row["title"]."',".$row["id"].",'$my_fed','".$row["status"]."')";
+          $str="insert into shared_meta(title,remote_id,id_fd,status,version) "
+              ."values ('".$row["title"]."',".$row["id"].",'$my_fed','".$row["status"]."',".$row["version"].")";
           $db_right->query($str);
           echo "\n\t\t\t>>ROW ID ".$row["id"]." UPLOADED";
         }
@@ -135,14 +133,15 @@ class Sync extends Thread{
 
 
   private function download_after_offset($offset,$db_left/*shared*/,$db_right/*local*/,$my_fed){
-    $query=$db_left->query("select * from test_table where id_fd not like '$my_fed' AND id > $offset");
+    $query=$db_left->query("select * from shared_meta where id_fd not like '$my_fed' AND id > $offset");
     while($row=mysqli_fetch_array($query)){
       //deleting the entry if already exists and writing a new one using the same IDs and updated data (simulates an update query)
-      $db_right->query("delete from test_table where id_fd like '".$row["id_fd"]."' and remote_id=".$row["remote_id"]);
+      $db_right->query("delete from shared_meta where id_fd like '".$row["id_fd"]."' and remote_id=".$row["remote_id"]);
 
       echo "\n\t\t\t>>ROW ID: ".$row["id"]." DOWNLOADED";
-      $string="insert into test_table(title,id_fd,remote_id,shared_id,status) "
-              ."values('".$row["title"]."','".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].",'".$row["status"]."');";
+
+      $string="insert into shared_meta(title,id_fd,remote_id,shared_id,status,version) "
+              ."values('".$row["title"]."','".$row["id_fd"]."',".$row["remote_id"].",".$row["id"].",'".$row["status"]."',".$row["version"].");";
       //echo "\n\t\t\t\t$string";
       $db_right->query($string);
 
