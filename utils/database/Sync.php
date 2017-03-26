@@ -34,9 +34,9 @@ class Sync extends Thread{
 
       //using $query1 and $query2 here (UPLOADING)
       if(mysqli_num_rows($query2)==0){
-        echo "\n\t>>TRYING TO POPULATE SHARED.DB FROM SKRATCH...";
+        echo "\n\t>>SHARED.DB MIGHT NEED TO BE POPULATED FROM SKREATCH...";
         if(mysqli_num_rows($query1)>0){
-          echo "\n\t\t>>POPULATING SHARED.DB";
+          echo "\n\t\t>>TRYING TO POPULATE SHARED.DB...";
           $this->upload_all($local_db,$shared_db,$my_fed);
         }else{
           echo "\n\t\t>>LOCAL.DB HAS NO DATA, NOT GOING TO POPULATE SHARED.DB";
