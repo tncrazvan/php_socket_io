@@ -19,27 +19,22 @@ USE `local`;
 -- Dump della struttura di tabella local.article
 CREATE TABLE IF NOT EXISTS `article` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `version` int(10) unsigned NOT NULL DEFAULT '1',
   `title` varchar(50) NOT NULL DEFAULT 'unknown title',
   `content` text NOT NULL,
   `time` int(10) NOT NULL,
   `user` varchar(50) NOT NULL,
   `status` varchar(50) NOT NULL DEFAULT 'final',
-  `version` int(10) unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
+  `has_zip` enum('Y','N') NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`id`,`version`),
   KEY `FK_article_user` (`user`),
+  KEY `FK_article_status` (`status`),
+  CONSTRAINT `FK_article_status` FOREIGN KEY (`status`) REFERENCES `status` (`status_name`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_article_user` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella local.article: ~0 rows (circa)
+-- Dump dei dati della tabella local.article: ~1 rows (circa)
 /*!40000 ALTER TABLE `article` DISABLE KEYS */;
-INSERT INTO `article` (`id`, `title`, `content`, `time`, `user`, `status`, `version`) VALUES
-	(6, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(7, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(8, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(9, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(10, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(11, 'unknown title', '', 0, 'tncrazvan', 'final', 1),
-	(12, 'unknown title3333', '', 0, 'tncrazvan', 'final', 1);
 /*!40000 ALTER TABLE `article` ENABLE KEYS */;
 
 -- Dump della struttura di tabella local.local_meta
@@ -54,17 +49,25 @@ CREATE TABLE IF NOT EXISTS `local_meta` (
   CONSTRAINT `FK_local_meta_status` FOREIGN KEY (`status`) REFERENCES `status` (`status_name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella local.local_meta: ~0 rows (circa)
+-- Dump dei dati della tabella local.local_meta: ~1 rows (circa)
 /*!40000 ALTER TABLE `local_meta` DISABLE KEYS */;
-INSERT INTO `local_meta` (`id`, `title`, `status`, `version`) VALUES
-	(6, 'unknown title', 'final', 1),
-	(7, 'unknown title', 'final', 1),
-	(8, 'unknown title', 'final', 1),
-	(9, 'unknown title', 'final', 1),
-	(10, 'unknown title', 'final', 1),
-	(11, 'unknown title', 'final', 1),
-	(12, 'unknown title3333', 'final', 1);
 /*!40000 ALTER TABLE `local_meta` ENABLE KEYS */;
+
+-- Dump della struttura di tabella local.revisit
+CREATE TABLE IF NOT EXISTS `revisit` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `reference` int(10) unsigned NOT NULL DEFAULT '0',
+  `revisit` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `FK_revisit_article` (`reference`),
+  KEY `FK_revisit_article_2` (`revisit`),
+  CONSTRAINT `FK_revisit_article` FOREIGN KEY (`reference`) REFERENCES `article` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_revisit_article_2` FOREIGN KEY (`revisit`) REFERENCES `article` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1 COMMENT='list of revisits of articles';
+
+-- Dump dei dati della tabella local.revisit: ~0 rows (circa)
+/*!40000 ALTER TABLE `revisit` DISABLE KEYS */;
+/*!40000 ALTER TABLE `revisit` ENABLE KEYS */;
 
 -- Dump della struttura di tabella local.shared_meta
 CREATE TABLE IF NOT EXISTS `shared_meta` (
@@ -78,17 +81,10 @@ CREATE TABLE IF NOT EXISTS `shared_meta` (
   PRIMARY KEY (`id`),
   KEY `FK_shared_meta_status` (`status`),
   CONSTRAINT `FK_shared_meta_status` FOREIGN KEY (`status`) REFERENCES `status` (`status_name`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=203 DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella local.shared_meta: ~6 rows (circa)
 /*!40000 ALTER TABLE `shared_meta` DISABLE KEYS */;
-INSERT INTO `shared_meta` (`id`, `title`, `id_fd`, `shared_id`, `status`, `version`, `remote_id`) VALUES
-	(189, 'unknown title', 'unimil', 211, 'final', 1, 1),
-	(190, 'unknown title', 'unimil', 213, 'final', 1, 2),
-	(191, 'unknown title', 'unimil', 263, 'final', 1, 3),
-	(192, 'unknown title', 'unimil', 286, 'final', 1, 4),
-	(193, 'unknown title', 'unimil', 304, 'final', 1, 5),
-	(195, 'test_title', 'unimil', 382, 'final', 1, 6);
 /*!40000 ALTER TABLE `shared_meta` ENABLE KEYS */;
 
 -- Dump della struttura di tabella local.status
@@ -113,12 +109,10 @@ CREATE TABLE IF NOT EXISTS `tmp_update_log` (
   PRIMARY KEY (`id`),
   KEY `FK_tmp_update_log_local_meta` (`local_id`),
   CONSTRAINT `FK_tmp_update_log_local_meta` FOREIGN KEY (`local_id`) REFERENCES `local_meta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella local.tmp_update_log: ~0 rows (circa)
 /*!40000 ALTER TABLE `tmp_update_log` DISABLE KEYS */;
-INSERT INTO `tmp_update_log` (`id`, `local_id`) VALUES
-	(58, 12);
 /*!40000 ALTER TABLE `tmp_update_log` ENABLE KEYS */;
 
 -- Dump della struttura di tabella local.update_log
@@ -128,12 +122,10 @@ CREATE TABLE IF NOT EXISTS `update_log` (
   PRIMARY KEY (`id`),
   KEY `FK_update_log_test_table` (`local_id`),
   CONSTRAINT `FK_update_log_test_table` FOREIGN KEY (`local_id`) REFERENCES `local_meta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella local.update_log: ~0 rows (circa)
 /*!40000 ALTER TABLE `update_log` DISABLE KEYS */;
-INSERT INTO `update_log` (`id`, `local_id`) VALUES
-	(58, 12);
 /*!40000 ALTER TABLE `update_log` ENABLE KEYS */;
 
 -- Dump della struttura di tabella local.user
@@ -143,10 +135,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella local.user: ~1 rows (circa)
+-- Dump dei dati della tabella local.user: ~3 rows (circa)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` (`id`, `sha1_password`) VALUES
-	('tncrazvan', 'qwerty');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Dump della struttura di trigger local.on_article_insert
