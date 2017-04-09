@@ -53,7 +53,7 @@ class Sync extends Thread{
           echo "\n\tLocal.db is up to date.";
         }
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
-        //$this->download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
+        $this->download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
       }else{
         echo "\n\tLocal.db is up to date.";
       }
