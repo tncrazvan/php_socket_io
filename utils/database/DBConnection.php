@@ -26,6 +26,18 @@ class DBConnection{
     $this->last_error;
   }
 
+  public function commit(){
+    return $this->mysqli->commit();
+  }
+
+  public function autocommit($value){
+    return $this->mysqli->autocommit($value);
+  }
+
+  public function prepare($string){
+    return $this->mysqli->prepare($string);
+  }
+
   public function query($string){
     $this->query_index++;
     $this->query_string_history[]=$string;

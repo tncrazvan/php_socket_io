@@ -1,4 +1,4 @@
-<<?php
+<?php
 abstract class Reader64 extends Thread{
   private
           //socket of the receiver
