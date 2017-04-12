@@ -118,6 +118,7 @@ class Sync extends Thread{
         $statement = $shared_db->prepare("delete from general where id_fd like ? and remote_id = ?");
         $statement->bind_param("si",$my_fed,$tmp_row["id"]);
         if ($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
+
         $statement->close();
 
 
@@ -179,8 +180,11 @@ class Sync extends Thread{
             $row["structure"],$row["aggregation_level"]
           );
           $statement->execute();
+          $tmp_insert_id=$statement->insert_id;
           $statement->close();
           echo "\n\t\t>>Row ".$row["id"]." has been uploaded.";
+
+          
         }
       }
   }
@@ -220,7 +224,9 @@ class Sync extends Thread{
         $row["structure"],$row["aggregation_level"]
       );
       if($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
+      $tmp_insert_id = $statement->insert_id;
       $statement->close();
+
 
       echo "\n\t\t<<Row ".$row["id"]." has been downloaded.";
     }

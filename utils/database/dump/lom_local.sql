@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versione server:              5.5.32 - MySQL Community Server (GPL)
--- S.O. server:                  Win32
--- HeidiSQL Versione:            9.4.0.5125
+-- Server version:               5.7.17-0ubuntu0.16.04.1 - (Ubuntu)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.4.0.5125
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,11 +12,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
--- Dump della struttura del database lom_local
+-- Dumping database structure for lom_local
 CREATE DATABASE IF NOT EXISTS `lom_local` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `lom_local`;
 
--- Dump della struttura di tabella lom_local.annotation
+-- Dumping structure for table lom_local.annotation
 CREATE TABLE IF NOT EXISTS `annotation` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `date` int(11) NOT NULL,
@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `annotation` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.annotation: ~0 rows (circa)
+-- Dumping data for table lom_local.annotation: ~0 rows (approximately)
 /*!40000 ALTER TABLE `annotation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `annotation` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.classification
+-- Dumping structure for table lom_local.classification
 CREATE TABLE IF NOT EXISTS `classification` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `purpose` enum('discipline','idea','prerequisite','educational object','accessibility','restrictions','educational level','skill level','security level','competency') NOT NULL,
@@ -40,11 +40,11 @@ CREATE TABLE IF NOT EXISTS `classification` (
   CONSTRAINT `classification_ibfk_1` FOREIGN KEY (`taxon_path`) REFERENCES `taxon_path` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.classification: ~0 rows (circa)
+-- Dumping data for table lom_local.classification: ~0 rows (approximately)
 /*!40000 ALTER TABLE `classification` DISABLE KEYS */;
 /*!40000 ALTER TABLE `classification` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.contribute
+-- Dumping structure for table lom_local.contribute
 CREATE TABLE IF NOT EXISTS `contribute` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_fd` varchar(50) NOT NULL,
@@ -53,15 +53,16 @@ CREATE TABLE IF NOT EXISTS `contribute` (
   `entity` text,
   `date` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_contribute_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_contribute_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.contribute: ~0 rows (circa)
+-- Dumping data for table lom_local.contribute: ~0 rows (approximately)
 /*!40000 ALTER TABLE `contribute` DISABLE KEYS */;
 /*!40000 ALTER TABLE `contribute` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.educational
+-- Dumping structure for table lom_local.educational
 CREATE TABLE IF NOT EXISTS `educational` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_fd` varchar(50) NOT NULL,
@@ -77,17 +78,18 @@ CREATE TABLE IF NOT EXISTS `educational` (
   `description` text,
   `language` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_educational_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_educational_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.educational: ~1 rows (circa)
+-- Dumping data for table lom_local.educational: ~1 rows (approximately)
 /*!40000 ALTER TABLE `educational` DISABLE KEYS */;
 INSERT INTO `educational` (`id`, `id_fd`, `remote_id`, `interactivity_type`, `learning_resource_type`, `semantic_density`, `intended_end_user_role`, `context`, `typica_age_range`, `difficulty`, `typical_learning_time`, `description`, `language`) VALUES
-	(1, 'unipg', 9, 'active', 'exercise', 'very low', 'teacher', 'school', 21, 'very easy', 123421, 'description test', 'it');
+	(2, 'unipg', 20, 'active', 'exercise', 'very low', 'teacher', 'school', 21, 'very easy', 1, 'this is educational description', 'it');
 /*!40000 ALTER TABLE `educational` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.general
+-- Dumping structure for table lom_local.general
 CREATE TABLE IF NOT EXISTS `general` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_fd` varchar(50) DEFAULT NULL,
@@ -103,17 +105,15 @@ CREATE TABLE IF NOT EXISTS `general` (
   `aggregation_level` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.general: ~1 rows (circa)
+-- Dumping data for table lom_local.general: ~1 rows (approximately)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
 INSERT INTO `general` (`id`, `id_fd`, `remote_id`, `shared_id`, `status`, `title`, `language`, `description`, `keyword`, `coverage`, `structure`, `aggregation_level`) VALUES
-	(9, 'unipg', 9, NULL, 'final', 'qwrq updated2235', 'it', 'q23r45q', '3qw25rt', 'tr53w2', 'qw2345r', 1),
-	(11, 'unipg', 11, NULL, 'final', 'qwrq updated2235', 'it', 'q23r45q', '3qw25rt', 'tr53w2', 'qw2345r', 1),
-	(12, 'unige', 1, 52, 'final', 'qwrq updated2235', 'it', 'q23r45q', '3qw25rt', 'tr53w2', 'qw2345r', 1);
+	(20, 'unipg', 20, null, 'final', 'whdg', 'jfg', 'h', 'jhf', NULL, 'gf', 1);
 /*!40000 ALTER TABLE `general` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.identifier
+-- Dumping structure for table lom_local.identifier
 CREATE TABLE IF NOT EXISTS `identifier` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `catalog` text,
@@ -121,11 +121,11 @@ CREATE TABLE IF NOT EXISTS `identifier` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.identifier: ~0 rows (circa)
+-- Dumping data for table lom_local.identifier: ~0 rows (approximately)
 /*!40000 ALTER TABLE `identifier` DISABLE KEYS */;
 /*!40000 ALTER TABLE `identifier` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.meta_metadata
+-- Dumping structure for table lom_local.meta_metadata
 CREATE TABLE IF NOT EXISTS `meta_metadata` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `identifier` int(10) unsigned DEFAULT NULL,
@@ -139,25 +139,31 @@ CREATE TABLE IF NOT EXISTS `meta_metadata` (
   CONSTRAINT `meta_metadata_ibfk_2` FOREIGN KEY (`contribute`) REFERENCES `contribute` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.meta_metadata: ~0 rows (circa)
+-- Dumping data for table lom_local.meta_metadata: ~0 rows (approximately)
 /*!40000 ALTER TABLE `meta_metadata` DISABLE KEYS */;
 /*!40000 ALTER TABLE `meta_metadata` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.orcomposite
+-- Dumping structure for table lom_local.orcomposite
 CREATE TABLE IF NOT EXISTS `orcomposite` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `requirement` int(10) unsigned NOT NULL,
   `type` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `minimum_version` varchar(255) DEFAULT NULL,
   `maximum_version` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  KEY `FK_orcomposite_requirement` (`requirement`),
+  CONSTRAINT `FK_orcomposite_requirement` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.orcomposite: ~0 rows (circa)
+-- Dumping data for table lom_local.orcomposite: ~2 rows (approximately)
 /*!40000 ALTER TABLE `orcomposite` DISABLE KEYS */;
+INSERT INTO `orcomposite` (`id`, `requirement`, `type`, `name`, `minimum_version`, `maximum_version`) VALUES
+	(1, 1, 'wqrf', 'rwe', '1', '1'),
+	(2, 1, 'qwtg', 'wtt', '1', '1');
 /*!40000 ALTER TABLE `orcomposite` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.relation
+-- Dumping structure for table lom_local.relation
 CREATE TABLE IF NOT EXISTS `relation` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `kind` enum('ispartof','haspart','isversionof','isformatof','hasformat','references','isreferencedby','isbasedon','isbasisfor','requires','isrequiredby') NOT NULL,
@@ -167,24 +173,23 @@ CREATE TABLE IF NOT EXISTS `relation` (
   CONSTRAINT `relation_ibfk_1` FOREIGN KEY (`resource`) REFERENCES `resource` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.relation: ~0 rows (circa)
+-- Dumping data for table lom_local.relation: ~0 rows (approximately)
 /*!40000 ALTER TABLE `relation` DISABLE KEYS */;
 /*!40000 ALTER TABLE `relation` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.requirement
+-- Dumping structure for table lom_local.requirement
 CREATE TABLE IF NOT EXISTS `requirement` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `orcomposite` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `orcomposite` (`orcomposite`),
-  CONSTRAINT `requirement_ibfk_1` FOREIGN KEY (`orcomposite`) REFERENCES `orcomposite` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.requirement: ~0 rows (circa)
+-- Dumping data for table lom_local.requirement: ~1 rows (approximately)
 /*!40000 ALTER TABLE `requirement` DISABLE KEYS */;
+INSERT INTO `requirement` (`id`) VALUES
+	(1);
 /*!40000 ALTER TABLE `requirement` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.resource
+-- Dumping structure for table lom_local.resource
 CREATE TABLE IF NOT EXISTS `resource` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `identifier` int(10) unsigned DEFAULT NULL,
@@ -194,24 +199,30 @@ CREATE TABLE IF NOT EXISTS `resource` (
   CONSTRAINT `resource_ibfk_1` FOREIGN KEY (`identifier`) REFERENCES `identifier` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.resource: ~0 rows (circa)
+-- Dumping data for table lom_local.resource: ~0 rows (approximately)
 /*!40000 ALTER TABLE `resource` DISABLE KEYS */;
 /*!40000 ALTER TABLE `resource` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.rights
+-- Dumping structure for table lom_local.rights
 CREATE TABLE IF NOT EXISTS `rights` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_fd` varchar(50) NOT NULL,
+  `remote_id` int(10) unsigned NOT NULL,
   `cost` enum('yes','no') NOT NULL,
   `copyright_and_other_restrictions` enum('yes','no') NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
+  CONSTRAINT `FK_rights_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.rights: ~0 rows (circa)
+-- Dumping data for table lom_local.rights: ~1 rows (approximately)
 /*!40000 ALTER TABLE `rights` DISABLE KEYS */;
+INSERT INTO `rights` (`id`, `id_fd`, `remote_id`, `cost`, `copyright_and_other_restrictions`, `description`) VALUES
+	(1, 'unipg', 20, 'yes', 'yes', 'description of copyright');
 /*!40000 ALTER TABLE `rights` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.taxon
+-- Dumping structure for table lom_local.taxon
 CREATE TABLE IF NOT EXISTS `taxon` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `entry` text,
@@ -220,11 +231,11 @@ CREATE TABLE IF NOT EXISTS `taxon` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.taxon: ~0 rows (circa)
+-- Dumping data for table lom_local.taxon: ~0 rows (approximately)
 /*!40000 ALTER TABLE `taxon` DISABLE KEYS */;
 /*!40000 ALTER TABLE `taxon` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.taxon_path
+-- Dumping structure for table lom_local.taxon_path
 CREATE TABLE IF NOT EXISTS `taxon_path` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `source` text NOT NULL,
@@ -234,13 +245,15 @@ CREATE TABLE IF NOT EXISTS `taxon_path` (
   CONSTRAINT `taxon_path_ibfk_1` FOREIGN KEY (`taxon`) REFERENCES `taxon` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.taxon_path: ~0 rows (circa)
+-- Dumping data for table lom_local.taxon_path: ~0 rows (approximately)
 /*!40000 ALTER TABLE `taxon_path` DISABLE KEYS */;
 /*!40000 ALTER TABLE `taxon_path` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.technical
+-- Dumping structure for table lom_local.technical
 CREATE TABLE IF NOT EXISTS `technical` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_fd` varchar(50) NOT NULL,
+  `remote_id` int(10) unsigned NOT NULL,
   `format` varchar(255) DEFAULT NULL,
   `size` varchar(255) DEFAULT NULL,
   `location` longtext,
@@ -248,15 +261,20 @@ CREATE TABLE IF NOT EXISTS `technical` (
   `installation_remarks` text,
   `other_platform_requirements` text,
   `duration` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `requirement` (`requirement`),
-  CONSTRAINT `technical_ibfk_1` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `FK_technical_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON UPDATE CASCADE,
+  CONSTRAINT `technical_ibfk_1` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.technical: ~0 rows (circa)
+-- Dumping data for table lom_local.technical: ~1 rows (approximately)
 /*!40000 ALTER TABLE `technical` DISABLE KEYS */;
+INSERT INTO `technical` (`id`, `id_fd`, `remote_id`, `format`, `size`, `location`, `requirement`, `installation_remarks`, `other_platform_requirements`, `duration`) VALUES
+	(1, 'unipg', 20, 'video/mpeg', '21kb', 'http://gdrive/efwn4rDFfe', 1, 'ewf', 'we', 12);
 /*!40000 ALTER TABLE `technical` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.tmp_update_log
+-- Dumping structure for table lom_local.tmp_update_log
 CREATE TABLE IF NOT EXISTS `tmp_update_log` (
   `id` int(10) unsigned NOT NULL DEFAULT '0',
   `local_id` int(10) unsigned NOT NULL,
@@ -265,36 +283,30 @@ CREATE TABLE IF NOT EXISTS `tmp_update_log` (
   CONSTRAINT `FK_tmp_update_log_general` FOREIGN KEY (`local_id`) REFERENCES `general` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.tmp_update_log: ~0 rows (circa)
+-- Dumping data for table lom_local.tmp_update_log: ~2 rows (approximately)
 /*!40000 ALTER TABLE `tmp_update_log` DISABLE KEYS */;
 INSERT INTO `tmp_update_log` (`id`, `local_id`) VALUES
-	(8, 9),
-	(11, 9),
-	(12, 9),
-	(13, 9),
-	(14, 11);
+	(22, 20),
+	(23, 20);
 /*!40000 ALTER TABLE `tmp_update_log` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.update_log
+-- Dumping structure for table lom_local.update_log
 CREATE TABLE IF NOT EXISTS `update_log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `local_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK__general` (`local_id`),
   CONSTRAINT `FK__general` FOREIGN KEY (`local_id`) REFERENCES `general` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.update_log: ~0 rows (circa)
+-- Dumping data for table lom_local.update_log: ~2 rows (approximately)
 /*!40000 ALTER TABLE `update_log` DISABLE KEYS */;
 INSERT INTO `update_log` (`id`, `local_id`) VALUES
-	(8, 9),
-	(11, 9),
-	(12, 9),
-	(13, 9),
-	(14, 11);
+	(22, 20),
+	(23, 20);
 /*!40000 ALTER TABLE `update_log` ENABLE KEYS */;
 
--- Dump della struttura di trigger lom_local.general_after_update
+-- Dumping structure for trigger lom_local.general_after_update
 SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='';
 DELIMITER //
 CREATE TRIGGER `general_after_update` AFTER UPDATE ON `general` FOR EACH ROW BEGIN
