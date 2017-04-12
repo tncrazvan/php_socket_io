@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `general` (
   `aggregation_level` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella lom_shared.general: ~1 rows (circa)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `technical` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `requirement` (`requirement`),
-  CONSTRAINT `FK_technical_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON UPDATE CASCADE,
+  CONSTRAINT `FK_technical_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `technical_ibfk_1` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
