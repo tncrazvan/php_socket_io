@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versione server:              5.5.32 - MySQL Community Server (GPL)
+-- Versione server:              10.1.21-MariaDB - mariadb.org binary distribution
 -- S.O. server:                  Win32
 -- HeidiSQL Versione:            9.4.0.5125
 -- --------------------------------------------------------
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `educational` (
   CONSTRAINT `FK_educational_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.educational: ~1 rows (circa)
+-- Dump dei dati della tabella lom_local.educational: ~0 rows (circa)
 /*!40000 ALTER TABLE `educational` DISABLE KEYS */;
 INSERT INTO `educational` (`id`, `id_fd`, `remote_id`, `interactivity_type`, `learning_resource_type`, `semantic_density`, `intended_end_user_role`, `context`, `typica_age_range`, `difficulty`, `typical_learning_time`, `description`, `language`) VALUES
 	(2, 'unipg', 20, 'active', 'exercise', 'very low', 'teacher', 'school', 21, 'very easy', 1, 'this is educational description', 'it');
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `general` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.general: ~1 rows (circa)
+-- Dump dei dati della tabella lom_local.general: ~0 rows (circa)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
 INSERT INTO `general` (`id`, `id_fd`, `remote_id`, `shared_id`, `status`, `title`, `language`, `description`, `keyword`, `coverage`, `structure`, `aggregation_level`) VALUES
 	(20, 'unipg', 20, NULL, 'final', 'whdg', 'jfg', 'h33333', 'jhf', NULL, 'gf', 1);
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `requirement` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.requirement: ~1 rows (circa)
+-- Dump dei dati della tabella lom_local.requirement: ~0 rows (circa)
 /*!40000 ALTER TABLE `requirement` DISABLE KEYS */;
 INSERT INTO `requirement` (`id`) VALUES
 	(1);
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `rights` (
   CONSTRAINT `FK_rights_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.rights: ~1 rows (circa)
+-- Dump dei dati della tabella lom_local.rights: ~0 rows (circa)
 /*!40000 ALTER TABLE `rights` DISABLE KEYS */;
 INSERT INTO `rights` (`id`, `id_fd`, `remote_id`, `cost`, `copyright_and_other_restrictions`, `description`) VALUES
 	(1, 'unipg', 20, 'yes', 'yes', 'description of copyright');
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `technical` (
   CONSTRAINT `technical_ibfk_1` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.technical: ~1 rows (circa)
+-- Dump dei dati della tabella lom_local.technical: ~0 rows (circa)
 /*!40000 ALTER TABLE `technical` DISABLE KEYS */;
 INSERT INTO `technical` (`id`, `id_fd`, `remote_id`, `format`, `size`, `location`, `requirement`, `installation_remarks`, `other_platform_requirements`, `duration`) VALUES
 	(1, 'unipg', 20, 'video/mpeg', '21kb', 'http://gdrive/efwn4rDFfe', 1, 'ewf', 'we', 12);

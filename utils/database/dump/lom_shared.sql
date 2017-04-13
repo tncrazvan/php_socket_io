@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versione server:              5.5.32 - MySQL Community Server (GPL)
+-- Versione server:              10.1.21-MariaDB - mariadb.org binary distribution
 -- S.O. server:                  Win32
 -- HeidiSQL Versione:            9.4.0.5125
 -- --------------------------------------------------------
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `general` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_shared.general: ~1 rows (circa)
+-- Dump dei dati della tabella lom_shared.general: ~0 rows (circa)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
 INSERT INTO `general` (`id`, `id_fd`, `remote_id`, `status`, `title`, `language`, `description`, `keyword`, `coverage`, `structure`, `aggregation_level`) VALUES
 	(26, 'unipg', 20, 'final', 'whdg', 'jfg', 'h33333', 'jhf', NULL, 'gf', 1);
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `requirement` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_shared.requirement: ~1 rows (circa)
+-- Dump dei dati della tabella lom_shared.requirement: ~0 rows (circa)
 /*!40000 ALTER TABLE `requirement` DISABLE KEYS */;
 INSERT INTO `requirement` (`id`) VALUES
 	(1);
