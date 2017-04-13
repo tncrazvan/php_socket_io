@@ -46,6 +46,7 @@ class File64{
       json_encode(
         array(
           "content-type"=>"image-jpg",
+          "file-size"=>filesize($this->name),
           "file-name"=>$this->name,
           "file-short-name"=>$this->short_name,
           "file-extension"=>$this->extension,

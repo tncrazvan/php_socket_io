@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `contribute` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_contribute_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_contribute_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella lom_shared.contribute: ~0 rows (circa)
 /*!40000 ALTER TABLE `contribute` DISABLE KEYS */;
@@ -81,12 +81,10 @@ CREATE TABLE IF NOT EXISTS `educational` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_educational_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_educational_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_shared.educational: ~1 rows (circa)
+-- Dump dei dati della tabella lom_shared.educational: ~0 rows (circa)
 /*!40000 ALTER TABLE `educational` DISABLE KEYS */;
-INSERT INTO `educational` (`id`, `id_fd`, `remote_id`, `interactivity_type`, `learning_resource_type`, `semantic_density`, `intended_end_user_role`, `context`, `typica_age_range`, `difficulty`, `typical_learning_time`, `description`, `language`) VALUES
-	(2, 'unipg', 20, 'active', 'exercise', 'very low', 'teacher', 'school', 21, 'very easy', 1, 'this is educational description', 'it');
 /*!40000 ALTER TABLE `educational` ENABLE KEYS */;
 
 -- Dump della struttura di tabella lom_shared.general
@@ -104,12 +102,12 @@ CREATE TABLE IF NOT EXISTS `general` (
   `aggregation_level` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella lom_shared.general: ~1 rows (circa)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
 INSERT INTO `general` (`id`, `id_fd`, `remote_id`, `status`, `title`, `language`, `description`, `keyword`, `coverage`, `structure`, `aggregation_level`) VALUES
-	(20, 'unipg', 20, 'final', 'whdg', 'jfg', 'h', 'jhf', NULL, 'gf', 1);
+	(26, 'unipg', 20, 'final', 'whdg', 'jfg', 'h33333', 'jhf', NULL, 'gf', 1);
 /*!40000 ALTER TABLE `general` ENABLE KEYS */;
 
 -- Dump della struttura di tabella lom_shared.identifier
@@ -213,12 +211,10 @@ CREATE TABLE IF NOT EXISTS `rights` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_rights_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_shared.rights: ~1 rows (circa)
+-- Dump dei dati della tabella lom_shared.rights: ~0 rows (circa)
 /*!40000 ALTER TABLE `rights` DISABLE KEYS */;
-INSERT INTO `rights` (`id`, `id_fd`, `remote_id`, `cost`, `copyright_and_other_restrictions`, `description`) VALUES
-	(1, 'unipg', 20, 'yes', 'yes', 'description of copyright');
 /*!40000 ALTER TABLE `rights` ENABLE KEYS */;
 
 -- Dump della struttura di tabella lom_shared.taxon
@@ -265,12 +261,10 @@ CREATE TABLE IF NOT EXISTS `technical` (
   KEY `requirement` (`requirement`),
   CONSTRAINT `FK_technical_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `technical_ibfk_1` FOREIGN KEY (`requirement`) REFERENCES `requirement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_shared.technical: ~1 rows (circa)
+-- Dump dei dati della tabella lom_shared.technical: ~0 rows (circa)
 /*!40000 ALTER TABLE `technical` DISABLE KEYS */;
-INSERT INTO `technical` (`id`, `id_fd`, `remote_id`, `format`, `size`, `location`, `requirement`, `installation_remarks`, `other_platform_requirements`, `duration`) VALUES
-	(1, 'unipg', 20, 'video/mpeg', '21kb', 'http://gdrive/efwn4rDFfe', 1, 'ewf', 'we', 12);
 /*!40000 ALTER TABLE `technical` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

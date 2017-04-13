@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `contribute` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_contribute_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_contribute_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella lom_local.contribute: ~0 rows (circa)
 /*!40000 ALTER TABLE `contribute` DISABLE KEYS */;
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `educational` (
   UNIQUE KEY `id_fd_remote_id` (`id_fd`,`remote_id`),
   KEY `FK_educational_general` (`id_fd`,`remote_id`),
   CONSTRAINT `FK_educational_general` FOREIGN KEY (`id_fd`, `remote_id`) REFERENCES `general` (`id_fd`, `remote_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 -- Dump dei dati della tabella lom_local.educational: ~1 rows (circa)
 /*!40000 ALTER TABLE `educational` DISABLE KEYS */;
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `general` (
 -- Dump dei dati della tabella lom_local.general: ~1 rows (circa)
 /*!40000 ALTER TABLE `general` DISABLE KEYS */;
 INSERT INTO `general` (`id`, `id_fd`, `remote_id`, `shared_id`, `status`, `title`, `language`, `description`, `keyword`, `coverage`, `structure`, `aggregation_level`) VALUES
-	(20, 'unipg', 20, NULL, 'final', 'whdg', 'jfg', 'h222222', 'jhf', NULL, 'gf', 1);
+	(20, 'unipg', 20, NULL, 'final', 'whdg', 'jfg', 'h33333', 'jhf', NULL, 'gf', 1);
 /*!40000 ALTER TABLE `general` ENABLE KEYS */;
 
 -- Dump della struttura di tabella lom_local.identifier
@@ -274,23 +274,6 @@ INSERT INTO `technical` (`id`, `id_fd`, `remote_id`, `format`, `size`, `location
 	(1, 'unipg', 20, 'video/mpeg', '21kb', 'http://gdrive/efwn4rDFfe', 1, 'ewf', 'we', 12);
 /*!40000 ALTER TABLE `technical` ENABLE KEYS */;
 
--- Dump della struttura di tabella lom_local.tmp_update_log
-CREATE TABLE IF NOT EXISTS `tmp_update_log` (
-  `id` int(10) unsigned NOT NULL DEFAULT '0',
-  `local_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_tmp_update_log_general` (`local_id`),
-  CONSTRAINT `FK_tmp_update_log_general` FOREIGN KEY (`local_id`) REFERENCES `general` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dump dei dati della tabella lom_local.tmp_update_log: ~3 rows (circa)
-/*!40000 ALTER TABLE `tmp_update_log` DISABLE KEYS */;
-INSERT INTO `tmp_update_log` (`id`, `local_id`) VALUES
-	(22, 20),
-	(23, 20),
-	(24, 20);
-/*!40000 ALTER TABLE `tmp_update_log` ENABLE KEYS */;
-
 -- Dump della struttura di tabella lom_local.update_log
 CREATE TABLE IF NOT EXISTS `update_log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -298,14 +281,10 @@ CREATE TABLE IF NOT EXISTS `update_log` (
   PRIMARY KEY (`id`),
   KEY `FK__general` (`local_id`),
   CONSTRAINT `FK__general` FOREIGN KEY (`local_id`) REFERENCES `general` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
 
--- Dump dei dati della tabella lom_local.update_log: ~3 rows (circa)
+-- Dump dei dati della tabella lom_local.update_log: ~0 rows (circa)
 /*!40000 ALTER TABLE `update_log` DISABLE KEYS */;
-INSERT INTO `update_log` (`id`, `local_id`) VALUES
-	(22, 20),
-	(23, 20),
-	(24, 20);
 /*!40000 ALTER TABLE `update_log` ENABLE KEYS */;
 
 -- Dump della struttura di trigger lom_local.general_after_update
