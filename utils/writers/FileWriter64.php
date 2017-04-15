@@ -1,6 +1,6 @@
 <?php
 require_once("./utils/writers/Writer64.php");
-require_once("./utils/messages/File64.php");
+require_once("./utils/messages/FileMessage64.php");
 class FileWriter64 extends Writer64{
   private $file_name;
   public function __construct($file_name,$ipv4_address,$port){
@@ -9,7 +9,7 @@ class FileWriter64 extends Writer64{
   }
 
   protected function callback($socket){
-    $tmp=new File64($this->file_name);
+    $tmp=new FileMessage64($this->file_name);
     $tmp->send_to($socket);
   }
 }

@@ -2,23 +2,23 @@
 require_once("./utils/readers/ServerReader64.php");
 require_once("./utils/database/Sync.php");
 
-
+$general_ini=parse_ini_file("./settings/general.ini");
 $sync = new class extends Thread{
 	public function run(){
-    $general_ini=parse_ini_file("./settings/general.ini");
-    $local_db=new DBConnection($general_ini["local_address"],"root","root",$general_ini["local_database_name"],3306);
-    $shared_db=new DBConnection($general_ini["shared_address"],"root","root",$general_ini["shared_database_name"],3306);
+		$general_ini=parse_ini_file("./settings/general.ini");
+    $local_db=new DBConnection("localhost",$general_ini);
+    $shared_db=new DBConnection("sharedhost",$general_ini);
 
     $my_fed=$general_ini["federation_name"];
     $sleep_time=$general_ini["sleep_time"];
 
     while(true){
 
-      $query1=$local_db->query("select * from general where id_fd like '$my_fed' order by remote_id desc limit 1");
-      $query2=$shared_db->query("select * from general where id_fd like '$my_fed' order by remote_id desc limit 1");
+      $query1=$local_db->query("select * from lo_general as G left join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Fd like '$my_fed' order by G.Id_Lo desc limit 1;");
+      $query2=$shared_db->query("select * from lo_general where id_fd like '$my_fed' order by id_lo desc limit 1");
 
-      $query3=$local_db->query("select * from general where id_fd not like '$my_fed' order by id desc limit 1");
-      $query4=$shared_db->query("select * from general where id_fd not like '$my_fed' order by id desc limit 1");
+      $query3=$local_db->query("select * from lo_general where id_fd not like '$my_fed' order by id desc limit 1");
+      $query4=$shared_db->query("select * from lo_general where id_fd not like '$my_fed' order by id desc limit 1");
 
 
       $local_r1=mysqli_fetch_array($query1);
@@ -37,9 +37,9 @@ $sync = new class extends Thread{
         }else{
           echo "\n\tShared database is up to date.";
         }
-      }else if($local_r1["id"] > $shared_r1["remote_id"]){
+      }else if($local_r1["id"] > $shared_r1["Id_Lo"] && $local_r1["Status"]!="draft"){
         echo "\n\t>>Uploading...";
-        Sync::upload_after_offset($shared_r1["remote_id"],$local_db,$shared_db,$my_fed);
+        Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed);
       }else{
         echo "\n\tShared database is up to date.";
       }
@@ -64,7 +64,7 @@ $sync = new class extends Thread{
 
 
       //fetching the last row from the actual update_log table
-      $last_update=Sync::getLastUpdateLog($local_db);
+      $last_update=Sync::get_last_update_log($local_db);
 
       if($last_update!=null){
         echo "\n\t>>Updating everything...";
@@ -110,7 +110,7 @@ echo "\nSocket created";
 	This server prepeares its socket for incoming connections.
 */
 
-if(!socket_bind($socket,"127.0.0.1",5000)){
+if(!socket_bind($socket,"127.0.0.1",$general_ini["listener_port"])){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nCould not bind socket: [$errorcode] $errormsg");
@@ -121,7 +121,7 @@ echo "\nSocked bind OK";
 /*
 	Sarting to listen for connections (not blocking call)
 */
-if(!socket_listen($socket,5000)){
+if(!socket_listen($socket,$general_ini["listener_port"])){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nSocket can't listen:  [$errorcode] $errormsg");
@@ -134,7 +134,7 @@ while($allowed_to_run){
 		ServerReader64 creates a Reader64, which in turn creates a Thread
 		which will read the client's message in chunks of 2048 bytes
 	*/
-	$sr=new ServerReader64($client/*client's socket*/,2048/*MTU*/);
+$sr=new ServerReader64($client/*client's socket*/,$general_ini["server_reader_mtu"]/*MTU*/);
 
 	//starting the reader (which is a thread)
 	$sr->start();
