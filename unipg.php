@@ -2,10 +2,10 @@
 require_once("./utils/readers/ServerReader64.php");
 require_once("./utils/database/Sync.php");
 
-$general_ini=parse_ini_file("./settings/general.ini");
+$general_ini=parse_ini_file("./settings/general_unipg.ini");
 $sync = new class extends Thread{
 	public function run(){
-		$general_ini=parse_ini_file("./settings/general.ini");
+		$general_ini=parse_ini_file("./settings/general_unipg.ini");
     $local_db=new DBConnection("localhost",$general_ini);
     $shared_db=new DBConnection("sharedhost",$general_ini);
 
@@ -28,7 +28,7 @@ $sync = new class extends Thread{
       $shared_r2=mysqli_fetch_array($query4);
 
       echo "\n\n\n\n\n\n\n############### Cheking... ################";
-
+			echo "\n\tFederate: $my_fed";
       //using $query1 and $query2 here (UPLOADING)
       if(mysqli_num_rows($query2)==0){
         if(mysqli_num_rows($query1)>0){
@@ -37,7 +37,7 @@ $sync = new class extends Thread{
         }else{
           echo "\n\tShared database is up to date.";
         }
-      }else if($local_r1["id"] > $shared_r1["Id_Lo"] && $local_r1["Status"]!="draft"){
+      }else if($local_r1["Id_Lo"] > $shared_r1["Id_Lo"] && $local_r1["Status"]!="draft"){
         echo "\n\t>>Uploading...";
         Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed);
       }else{

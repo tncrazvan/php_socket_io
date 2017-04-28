@@ -45,7 +45,7 @@ class Sync{
 
 
         $statement = $shared_db->prepare("delete from lo_general where Id_Fd like ? and Id_Lo = ?");
-        $statement->bind_param("si",$my_fed,$row["id"]);
+        $statement->bind_param("si",$my_fed,$row["Id_Lo"]);
         if ($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
 
         $statement->close();
@@ -59,23 +59,115 @@ class Sync{
             Id_Fd,Id_Lo,
             Title,Language,
             Description,Keyword,Coverage,
-            Structure,Aggregation_Level
+            Structure,Aggregation_Level,TimeUpd
           ) "
-            ."values (?,?,?,?,?,?,?,?,?)";
+            ."values (?,?,?,?,?,?,?,?,?,?)";
         $statement = $shared_db->prepare($str);
-        $statement->bind_param("sissssssi",
-          $row["Id_Fd"],$row["id"],
+        $statement->bind_param("sissssssii",
+          $row["Id_Fd"],$row["Id_Lo"],
           $row["Title"],$row["Language"],
           $row["Description"],$row["Keyword"],$row["Coverage"],
-          $row["Structure"],$row["Aggregation_Level"]
+          $row["Structure"],$row["Aggregation_Level"],$row["TimeUpd"]
         );
+        /*
+          there's actually no need to insert it right away,
+          the other daemons can download the newest version themselves
+          during the next sync routine
+        */
         $statement->execute();
         $statement->close();
 
-        /*
-          there's actually no need to insert it right away,
-          the other daemons can download the newest version durin the next sync routine
-        */
+        /*updating side lifecycle of the object to shared database*/
+        $string = "select * from lo_lifecycle where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          $item = mysqli_fetch_array($result_tmp);
+          /*uploading lo_lifecycle of the object to shared database*/
+          $statement = $shared_db->prepare("insert into lo_lifecycle(Id_Lo,Id_Fd,Version,Status) value(?,?,?,?)");
+          $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["Version"],$item["Status"]);
+          $statement->execute();
+          $statement->close();
+        }
+
+
+        /*updating meta-metadata of the object to shared database*/
+        $string = "select * from lo_metadata where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          $item = mysqli_fetch_array($result_tmp);
+          /*updating lo_lifecycle of the object to shared database*/
+          $statement = $shared_db->prepare("insert into lo_metadata(Id_Lo,Id_Fd,MetadataSchema,Language) value(?,?,?,?)");
+          $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["MetadataSchema"],$item["Language"]);
+          $statement->execute();
+          $statement->close();
+        }
+
+
+        /*updating technical of the object to shared database*/
+        $string = "select * from lo_technical where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          $item = mysqli_fetch_array($result_tmp);
+          /*uploading lo_lifecycle of the object to shared database*/
+          $statement = $shared_db->prepare("insert into lo_technical(Id_Lo,Id_Fd,Format,Size,Location,InstallationRemarks,OtherPlatformRequirements,Duration) value(?,?,?,?,?,?,?,?)");
+          $statement->bind_param("isssssss",$item["Id_Lo"],$item["Id_Fd"],$item["Format"],$item["size"],$item["Location"],$item["InstallationRemarks"],$item["OtherPlatformRequirements"],$item["Duration"]);
+          $statement->execute();
+          $statement->close();
+        }
+
+        /*updating educational of the object to shared database*/
+        $string = "select * from lo_educational where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          $item = mysqli_fetch_array($result_tmp);
+          /*uploading lo_lifecycle of the object to shared database*/
+          $statement = $shared_db->prepare("insert into lo_educational(Id_Lo,Id_Fd,InteractivityType,LearningResourceType,InteractivityLevel,SemanticDensity,IntendedEndUserRole,Context,TypicalAgeRange,Difficulty,TypicalLearningTime,edu_Description,edu_Language) value(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+          $statement->bind_param("issssssssssss",
+          $item["Id_Lo"],$item["Id_Fd"],$item["InteractivityType"],$item["LearningResourceType"],
+          $item["InteractivityLevel"],$item["SemanticDensity"],$item["IntendedEndUserRole"],
+          $item["Context"],$item["TypicalAgeRange"],$item["Difficulty"],
+          $item["TypicalLearningTime"],$item["edu_Description"],$item["edu_Language"]);
+          $statement->execute();
+          $statement->close();
+        }
+
+        /*updating rights of the object to shared database*/
+        $string = "select * from lo_rights where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          $item = mysqli_fetch_array($result_tmp);
+          /*uploading lo_lifecycle of the object to shared database*/
+          $statement = $shared_db->prepare("insert into lo_rights(Id_Lo,Id_Fd,Cost,Copyright,rights_Description) value(?,?,?,?,?)");
+          $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Cost"],$item["Copyright"],$item["rights_Description"]);
+          $statement->execute();
+          $statement->close();
+        }
+
+        /*updating relation of the object to the shared database*/
+        $string = "select * from lo_relation where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          while($item = mysqli_fetch_array($result_tmp)){
+            /*uploading lo_lifecycle of the object to shared database*/
+            $statement = $shared_db->prepare("insert into lo_relation(Id_Lo,Id_Fd,Id_Target,Kind,TimeUpd) value(?,?,?,?,?)");
+            $statement->bind_param("isisi",$item["Id_Lo"],$item["Id_Fd"],$item["Id_Target"],$item["Kind"],$item["TimeUpd"]);
+            $statement->execute();
+            $statement->close();
+          }
+        }
+
+        /*updating file of the object to the shared database*/
+        $string = "select * from lo_file where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          while($item = mysqli_fetch_array($result_tmp)){
+            /*uploading lo_lifecycle of the object to shared database*/
+            $statement = $shared_db->prepare("insert into lo_file(Id_Lo,Id_Fd,url,filename,filesize,filemime) value(?,?,?,?,?,?)");
+            $statement->bind_param("isssss",$item["Id_Lo"],$item["Id_Fd"],$item["url"],$item["filename"],$item["filesize"],$item["filemime"]);
+            $statement->execute();
+            $statement->close();
+          }
+        }
 
         echo "\n\t\t>>Row ".$row["id"]." has been updated.";
       }
@@ -90,7 +182,7 @@ class Sync{
   //uploads data from left database (starting from row $offset) to right database
   public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed){
 
-      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.id>$offset";
+      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset";
       $result=$local_db->query($str);
       $drafts_counter=0;
       while($row=mysqli_fetch_array($result)){
@@ -100,19 +192,107 @@ class Sync{
               Id_Fd,Id_Lo,
               Title,Language,
               Description,Keyword,Coverage,
-              Structure,Aggregation_Level
+              Structure,Aggregation_Level,TimeUpd
             ) "
-              ."values (?,?,?,?,?,?,?,?,?)";
+              ."values (?,?,?,?,?,?,?,?,?,?)";
           $statement = $shared_db->prepare($str);
-          $statement->bind_param("sissssssi",
-            $row["Id_Fd"],$row["id"],
+          $statement->bind_param("sissssssii",
+            $row["Id_Fd"],$row["Id_Lo"],
             $row["Title"],$row["Language"],
             $row["Description"],$row["Keyword"],$row["Coverage"],
-            $row["Structure"],$row["Aggregation_Level"]
+            $row["Structure"],$row["Aggregation_Level"],$row["TimeUpd"]
           );
           $statement->execute();
           $tmp_insert_id=$statement->insert_id;
           $statement->close();
+
+
+          /*uploading lifecycle of the object to shared database*/
+          $string = "select * from lo_lifecycle where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            $item = mysqli_fetch_array($result_tmp);
+            $statement = $shared_db->prepare("insert into lo_lifecycle(Id_Lo,Id_Fd,Version,Status) value(?,?,?,?)");
+            $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["Version"],$item["Status"]);
+            $statement->execute();
+            $statement->close();
+          }
+
+
+          /*uploading meta-metadata of the object to shared database*/
+          $string = "select * from lo_metadata where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            $item = mysqli_fetch_array($result_tmp);
+            $statement = $shared_db->prepare("insert into lo_metadata(Id_Lo,Id_Fd,MetadataSchema,Language) value(?,?,?,?)");
+            $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["MetadataSchema"],$item["Language"]);
+            $statement->execute();
+            $statement->close();
+          }
+
+
+          /*uploading technical of the object to shared database*/
+          $string = "select * from lo_technical where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            $item = mysqli_fetch_array($result_tmp);
+            $statement = $shared_db->prepare("insert into lo_technical(Id_Lo,Id_Fd,Format,Size,Location,InstallationRemarks,OtherPlatformRequirements,Duration) value(?,?,?,?,?,?,?,?)");
+            $statement->bind_param("isssssss",$item["Id_Lo"],$item["Id_Fd"],$item["Format"],$item["size"],$item["Location"],$item["InstallationRemarks"],$item["OtherPlatformRequirements"],$item["Duration"]);
+            $statement->execute();
+            $statement->close();
+          }
+
+          /*uploading educational of the object to shared database*/
+          $string = "select * from lo_educational where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            $item = mysqli_fetch_array($result_tmp);
+            $statement = $shared_db->prepare("insert into lo_educational(Id_Lo,Id_Fd,InteractivityType,LearningResourceType,InteractivityLevel,SemanticDensity,IntendedEndUserRole,Context,TypicalAgeRange,Difficulty,TypicalLearningTime,edu_Description,edu_Language) value(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            $statement->bind_param("issssssssssss",
+            $item["Id_Lo"],$item["Id_Fd"],$item["InteractivityType"],$item["LearningResourceType"],
+            $item["InteractivityLevel"],$item["SemanticDensity"],$item["IntendedEndUserRole"],
+            $item["Context"],$item["TypicalAgeRange"],$item["Difficulty"],
+            $item["TypicalLearningTime"],$item["edu_Description"],$item["edu_Language"]);
+            $statement->execute();
+            $statement->close();
+          }
+
+          /*uploading rights of the object to shared database*/
+          $string = "select * from lo_rights where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            $item = mysqli_fetch_array($result_tmp);
+            $statement = $shared_db->prepare("insert into lo_rights(Id_Lo,Id_Fd,Cost,Copyright,rights_Description) value(?,?,?,?,?)");
+            $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Cost"],$item["Copyright"],$item["rights_Description"]);
+            $statement->execute();
+            $statement->close();
+          }
+
+          /*uploading relation of the object to the shared database*/
+          $string = "select * from lo_relation where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            while($item = mysqli_fetch_array($result_tmp)){
+              $statement = $shared_db->prepare("insert into lo_relation(Id_Lo,Id_Fd,Id_Target,Kind,TimeUpd) value(?,?,?,?,?)");
+              $statement->bind_param("isisi",$item["Id_Lo"],$item["Id_Fd"],$item["Id_Target"],$item["Kind"],$item["TimeUpd"]);
+              $statement->execute();
+              $statement->close();
+            }
+          }
+
+          /*uploading file of the object to the shared database*/
+          $string = "select * from lo_file where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            while($item = mysqli_fetch_array($result_tmp)){
+              $statement = $shared_db->prepare("insert into lo_file(Id_Lo,Id_Fd,url,filename,filesize,filemime) value(?,?,?,?,?,?)");
+              $statement->bind_param("isssss",$item["Id_Lo"],$item["Id_Fd"],$item["url"],$item["filename"],$item["filesize"],$item["filemime"]);
+              $statement->execute();
+              $statement->close();
+            }
+          }
+
+
           echo "\n\t\t>>Row ".$row["id"]." has been uploaded.";
 
 
@@ -142,36 +322,127 @@ class Sync{
 
 
   public static function download_after_offset($offset,$shared_db,$local_db,$my_fed){
-    $query=$shared_db->query("select * from lo_general where Id_Fd not like '$my_fed' AND id > $offset");
+    $string = "select * from lo_general where Id_Fd not like '$my_fed' AND id > $offset";
+    $query=$shared_db->query($string);
     while($row=mysqli_fetch_array($query)){
       /*
         Deleting duplicate entries and writing a new one using the
         same IDs but with updated data (simulates an update query)
       */
       $statement=$local_db->prepare("delete from lo_general where Id_Fd like ? and Id_Lo = ?");
-      $statement->bind_param("si",$my_fed,$row["Id_Lo"]);
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
       if($statement->execute() == false) echo "\n\t\tERROR:".$statement->error;
       $statement->close();
 
 
       $str="insert into lo_general(
-          Id_Fd,Id_Lo,shared_id,
-          Status,Title,Language,
-          Description,Keyword,Coverage,
-          Structure,Aggregation_Level
+          Id_Lo, Id_Fd, shared_id,
+          Title, Language, Description,
+          Keyword, Coverage, Structure,
+          Aggregation_Level, TimeUpd
         ) "
-          ."values (?,?,?,?,?,?,?,?,?,?,?)";
+          ."value (?,?,?,?,?,?,?,?,?,?,?)";
 
       $statement = $local_db->prepare($str);
-      $statement->bind_param("siisssssssi",
-        $row["Id_Fd"],$row["Id_Lo"],$row["id"],
-        $row["Status"],$row["Title"],$row["Language"],
-        $row["Description"],$row["Keyword"],$row["Coverage"],
-        $row["Structure"],$row["Aggregation_Level"]
+      $statement->bind_param("isissssssii",
+        $row["Id_Lo"], $row["Id_Fd"], $row["id"],
+        $row["Title"], $row["Language"], $row["Description"],
+        $row["Keyword"], $row["Coverage"], $row["Structure"],
+        $row["Aggregation_Level"], $row["TimeUpd"]
       );
       if($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
       $tmp_insert_id = $statement->insert_id;
       $statement->close();
+
+
+      /*downloading lifecycle of the object*/
+      $string = "select * from lo_lifecycle where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $local_db->prepare("insert into lo_lifecycle(Id_Lo,Id_Fd,Version,Status) value(?,?,?,?)");
+        $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["Version"],$item["Status"]);
+        $statement->execute();
+        $statement->close();
+      }else{
+        echo "\n\nNOT OK\n\n";
+      }
+
+
+      /*downloading meta-metadata of the object*/
+      $string = "select * from lo_metadata where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $local_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $shared_db->prepare("insert into lo_metadata(Id_Lo,Id_Fd,MetadataSchema,Language) value(?,?,?,?)");
+        $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["MetadataSchema"],$item["Language"]);
+        $statement->execute();
+        $statement->close();
+      }
+
+
+      /*downloading technical of the object*/
+      $string = "select * from lo_technical where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $local_db->prepare("insert into lo_technical(Id_Lo,Id_Fd,Format,Size,Location,InstallationRemarks,OtherPlatformRequirements,Duration) value(?,?,?,?,?,?,?,?)");
+        $statement->bind_param("isssssss",$item["Id_Lo"],$item["Id_Fd"],$item["Format"],$item["size"],$item["Location"],$item["InstallationRemarks"],$item["OtherPlatformRequirements"],$item["Duration"]);
+        $statement->execute();
+        $statement->close();
+      }
+
+      /*downloading educational of the object*/
+      $string = "select * from lo_educational where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $local_db->prepare("insert into lo_educational(Id_Lo,Id_Fd,InteractivityType,LearningResourceType,InteractivityLevel,SemanticDensity,IntendedEndUserRole,Context,TypicalAgeRange,Difficulty,TypicalLearningTime,edu_Description,edu_Language) value(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $statement->bind_param("issssssssssss",
+        $item["Id_Lo"],$item["Id_Fd"],$item["InteractivityType"],$item["LearningResourceType"],
+        $item["InteractivityLevel"],$item["SemanticDensity"],$item["IntendedEndUserRole"],
+        $item["Context"],$item["TypicalAgeRange"],$item["Difficulty"],
+        $item["TypicalLearningTime"],$item["edu_Description"],$item["edu_Language"]);
+        $statement->execute();
+        $statement->close();
+      }
+
+      /*downloading rights of the object*/
+      $string = "select * from lo_rights where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $local_db->prepare("insert into lo_rights(Id_Lo,Id_Fd,Cost,Copyright,rights_Description) value(?,?,?,?,?)");
+        $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Cost"],$item["Copyright"],$item["rights_Description"]);
+        $statement->execute();
+        $statement->close();
+      }
+
+      /*downloading relation of the object*/
+      $string = "select * from lo_relation where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        while($item = mysqli_fetch_array($result_tmp)){
+          $statement = $local_db->prepare("insert into lo_relation(Id_Lo,Id_Fd,Id_Target,Kind,TimeUpd) value(?,?,?,?,?)");
+          $statement->bind_param("isisi",$item["Id_Lo"],$item["Id_Fd"],$item["Id_Target"],$item["Kind"],$item["TimeUpd"]);
+          $statement->execute();
+          $statement->close();
+        }
+      }
+
+      /*downloading file of the object*/
+      $string = "select * from lo_file where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        while($item = mysqli_fetch_array($result_tmp)){
+          $statement = $local_db->prepare("insert into lo_file(Id_Lo,Id_Fd,url,filename,filesize,filemime) value(?,?,?,?,?,?)");
+          $statement->bind_param("isssss",$item["Id_Lo"],$item["Id_Fd"],$item["url"],$item["filename"],$item["filesize"],$item["filemime"]);
+          $statement->execute();
+          $statement->close();
+        }
+      }
+
+
 
 
       echo "\n\t\t<<Row ".$row["id"]." has been downloaded.";
@@ -179,7 +450,7 @@ class Sync{
   }
 
   public static function download_all($shared_db,$local_db,$my_fed){
-    $this->download_after_offset(0,$shared_db,$local_db,$my_fed);
+    Sync::download_after_offset(0,$shared_db,$local_db,$my_fed);
   }
 
 

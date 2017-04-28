@@ -16,34 +16,27 @@
 CREATE DATABASE IF NOT EXISTS `glorep_shared` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `glorep_shared`;
 
--- Dump della struttura di tabella glorep_shared.lo_annotation
-CREATE TABLE IF NOT EXISTS `lo_annotation` (
-  `Id_Annotation` int(11) NOT NULL,
-  `Id_Identifier` int(11) NOT NULL,
-  `Entity` varchar(1000) NOT NULL,
-  `Date` datetime NOT NULL,
-  `Description` varchar(1000) NOT NULL,
-  `TimeUpd` int(11) NOT NULL,
-  PRIMARY KEY (`Id_Annotation`,`Id_Identifier`),
-  KEY `Id_Identifier` (`Id_Identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+-- Dump della struttura di tabella glorep_shared.lo_category
+CREATE TABLE IF NOT EXISTS `lo_category` (
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Categoria_LO` int(11) NOT NULL COMMENT 'Refers to the category'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical capabilities necessary for using this learning...';
 
--- Dump dei dati della tabella glorep_shared.lo_annotation: ~0 rows (circa)
-/*!40000 ALTER TABLE `lo_annotation` DISABLE KEYS */;
-/*!40000 ALTER TABLE `lo_annotation` ENABLE KEYS */;
+-- Dump dei dati della tabella glorep_shared.lo_category: ~0 rows (circa)
+/*!40000 ALTER TABLE `lo_category` DISABLE KEYS */;
+/*!40000 ALTER TABLE `lo_category` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_contribute
 CREATE TABLE IF NOT EXISTS `lo_contribute` (
-  `Id_Contribute` int(11) NOT NULL AUTO_INCREMENT,
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Role` varchar(50) NOT NULL,
-  `Entity` varchar(1000) NOT NULL,
-  `Date` varchar(20) NOT NULL,
-  PRIMARY KEY (`Id_Contribute`),
-  KEY `FK_lo_contribute_lo_general` (`Id_Lo`,`Id_Fd`),
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Role` varchar(50) NOT NULL COMMENT 'Kind of contribution.',
+  `Entity` varchar(1000) DEFAULT NULL COMMENT 'The identification of and information about entities contributing to this learnin object.',
+  `Date` varchar(20) DEFAULT NULL COMMENT 'The date of contribution.',
+  PRIMARY KEY (`Id_Lo`,`Id_Fd`),
   CONSTRAINT `FK_lo_contribute_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Those Entities that have contibuted to the state of this...';
 
 -- Dump dei dati della tabella glorep_shared.lo_contribute: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_contribute` DISABLE KEYS */;
@@ -51,38 +44,39 @@ CREATE TABLE IF NOT EXISTS `lo_contribute` (
 
 -- Dump della struttura di tabella glorep_shared.lo_educational
 CREATE TABLE IF NOT EXISTS `lo_educational` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `InteractivityType` varchar(200) NOT NULL,
-  `LearningResourceType` varchar(200) NOT NULL,
-  `InteractivityLevel` varchar(200) NOT NULL,
-  `SemanticDensity` varchar(200) NOT NULL,
-  `IntendedEndUserRole` varchar(200) NOT NULL,
-  `Context` varchar(200) NOT NULL,
-  `TypicalAgeRange` varchar(1000) NOT NULL,
-  `Difficulty` varchar(200) NOT NULL,
-  `TypicalLearningTime` varchar(50) NOT NULL,
-  `Description` varchar(1000) NOT NULL,
-  `Language` varchar(100) NOT NULL,
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `InteractivityType` varchar(200) NOT NULL COMMENT 'Predominant mode of learning supported by this learning object.',
+  `LearningResourceType` varchar(200) NOT NULL COMMENT 'Specific kind of learning object.',
+  `InteractivityLevel` varchar(200) NOT NULL COMMENT 'The degree of interactivity characterizing this learning object.',
+  `SemanticDensity` varchar(200) NOT NULL COMMENT 'The degree of concisness of a learning object.',
+  `IntendedEndUserRole` varchar(200) NOT NULL COMMENT 'Principal users for which this learning object was designed.',
+  `Context` varchar(200) NOT NULL COMMENT 'The principal environment within which the learning and use of this learning object intended to take place.',
+  `TypicalAgeRange` varchar(1000) DEFAULT NULL COMMENT 'Age of the typical intended user.',
+  `Difficulty` varchar(200) NOT NULL COMMENT 'How hard it is to work with this learning object.',
+  `TypicalLearningTime` varchar(50) DEFAULT NULL COMMENT 'Time takes to work with this learning object.',
+  `edu_Description` varchar(1000) DEFAULT NULL COMMENT 'Comments on how this learning object is to be used.',
+  `edu_Language` varchar(100) DEFAULT NULL COMMENT 'The language used by the typical intended user.',
   PRIMARY KEY (`Id_Lo`,`Id_Fd`),
   CONSTRAINT `FK_lo_educational_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical capabilities necessary for using this learning...';
 
 -- Dump dei dati della tabella glorep_shared.lo_educational: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_educational` DISABLE KEYS */;
+INSERT INTO `lo_educational` (`Id_Lo`, `Id_Fd`, `InteractivityType`, `LearningResourceType`, `InteractivityLevel`, `SemanticDensity`, `IntendedEndUserRole`, `Context`, `TypicalAgeRange`, `Difficulty`, `TypicalLearningTime`, `edu_Description`, `edu_Language`) VALUES
+	(21, 'glorep.unipg.it', 'active', 'exercise', 'very low', 'very low', 'teacher', 'school', '', 'very easy', '', '', 'en'),
+	(23, 'glorep.unige.it', 'active', 'exercise', 'very low', 'very low', 'teacher', 'school', '', 'very easy', '', '', 'en');
 /*!40000 ALTER TABLE `lo_educational` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_federation
 CREATE TABLE IF NOT EXISTS `lo_federation` (
-  `ServerName` varchar(20) NOT NULL,
-  `ServerAddress` varchar(250) NOT NULL,
-  `Login` varchar(50) NOT NULL,
-  `Password` varchar(50) NOT NULL,
-  `Active` tinyint(1) NOT NULL,
-  `N_Lo` int(11) NOT NULL,
-  `TimeUpd` int(11) NOT NULL,
-  PRIMARY KEY (`ServerName`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `ServerName` varchar(20) NOT NULL COMMENT 'A list of name of federated',
+  `ServerAddress` varchar(250) NOT NULL COMMENT 'A list of federated address',
+  `N_Lo` int(11) NOT NULL DEFAULT '0' COMMENT 'Number of Node.',
+  `TimeUpd` int(11) NOT NULL DEFAULT '0' COMMENT 'Time for sinc.',
+  PRIMARY KEY (`ServerName`),
+  UNIQUE KEY `ServerName` (`ServerName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_federation: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_federation` DISABLE KEYS */;
@@ -91,59 +85,61 @@ CREATE TABLE IF NOT EXISTS `lo_federation` (
 -- Dump della struttura di tabella glorep_shared.lo_file
 CREATE TABLE IF NOT EXISTS `lo_file` (
   `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `url` varchar(1000) NOT NULL,
-  `filename` varchar(255) NOT NULL,
-  `filesize` varchar(255) NOT NULL,
-  `filemime` varchar(255) NOT NULL,
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `url` varchar(255) NOT NULL COMMENT 'The server path where the file is located.',
+  `filename` varchar(255) NOT NULL COMMENT 'Name of the file.',
+  `filesize` varchar(255) NOT NULL COMMENT 'Size of the file.',
+  `filemime` varchar(255) NOT NULL COMMENT 'Name of the file.',
   PRIMARY KEY (`Id_Lo`,`Id_Fd`),
-  KEY `Id_Fd` (`Id_Fd`,`Id_Lo`),
   CONSTRAINT `FK_lo_file_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Learning Object files';
 
 -- Dump dei dati della tabella glorep_shared.lo_file: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_file` DISABLE KEYS */;
+INSERT INTO `lo_file` (`Id_Lo`, `Id_Fd`, `url`, `filename`, `filesize`, `filemime`) VALUES
+	(21, 'glorep.unipg.it', 'http://127.0.0.1/glorep/sites/default/files/LOM_1.PNG', 'LOM.PNG', '86289', 'image/png'),
+	(23, 'glorep.unige.it', 'http://127.0.0.1/glorep2/sites/default/files/GlorepSyncIO.png', 'GlorepSyncIO.png', '1036244', 'image/png');
 /*!40000 ALTER TABLE `lo_file` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_general
 CREATE TABLE IF NOT EXISTS `lo_general` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
-  `Id_Fd` varchar(255) NOT NULL,
-  `Title` varchar(1000) DEFAULT NULL,
-  `Language` varchar(100) DEFAULT NULL,
-  `Description` varchar(2000) DEFAULT NULL,
-  `Keyword` varchar(1000) DEFAULT NULL,
-  `Coverage` varchar(1000) DEFAULT NULL,
-  `Structure` varchar(1000) DEFAULT NULL,
-  `Aggregation_Level` tinyint(4) DEFAULT NULL,
-  `Deleted` varchar(5) NOT NULL DEFAULT 'no',
-  `TimeUpd` int(11) DEFAULT '0',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `shared_id` int(10) DEFAULT NULL,
+  `Title` varchar(1000) DEFAULT NULL COMMENT 'Title of this Learning Object',
+  `Language` varchar(100) DEFAULT NULL COMMENT 'Language of this learning object.',
+  `Description` varchar(2000) DEFAULT NULL COMMENT 'Description of this Learning Object',
+  `Keyword` varchar(1000) DEFAULT NULL COMMENT 'Keyword of this Learning Object',
+  `Coverage` varchar(1000) DEFAULT NULL COMMENT 'Coverage of this learning object.',
+  `Structure` varchar(1000) DEFAULT NULL COMMENT 'Structure of this learning object.',
+  `Aggregation_Level` tinyint(4) DEFAULT NULL COMMENT 'Aggregation Level of this learning object.',
+  `Deleted` varchar(5) NOT NULL DEFAULT 'no' COMMENT 'set a yes if this learning object is deleted',
+  `TimeUpd` int(11) NOT NULL DEFAULT '0' COMMENT 'Time for sinc.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`),
-  KEY `Id_Fd` (`Id_Lo`,`Id_Fd`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `node_id` (`Id_Lo`,`Id_Fd`),
+  KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`)
+) ENGINE=InnoDB AUTO_INCREMENT=292 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_general: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_general` DISABLE KEYS */;
+INSERT INTO `lo_general` (`id`, `Id_Lo`, `Id_Fd`, `shared_id`, `Title`, `Language`, `Description`, `Keyword`, `Coverage`, `Structure`, `Aggregation_Level`, `Deleted`, `TimeUpd`) VALUES
+	(290, 23, 'glorep.unige.it', NULL, 'test', 'en', 'test', '', '', 'atomic', 1, 'no', 1493412699),
+	(291, 21, 'glorep.unipg.it', NULL, 'test unipg (modificato 2)', 'en', 'test', '', '', 'atomic', 1, 'no', 1493414309);
 /*!40000 ALTER TABLE `lo_general` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_identifier
 CREATE TABLE IF NOT EXISTS `lo_identifier` (
-  `Id_Identifier` int(11) NOT NULL,
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Catalog` varchar(1000) NOT NULL,
-  `Entry` varchar(1000) NOT NULL,
-  `TimeUpd` int(11) NOT NULL,
+  `Id_Identifier` int(10) unsigned NOT NULL COMMENT 'A globally unique refers to a learning object.',
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Catalog` varchar(1000) NOT NULL COMMENT 'The name or designator of the identifications or cataloging scheme for this entry. A namespace scheme.',
+  `Entry` varchar(1000) NOT NULL COMMENT 'The value of the identifier within the identification or cataloging scheme that designates or identifies the target learning object. A namespace specific string.',
+  `TimeUpd` int(11) NOT NULL DEFAULT '0' COMMENT 'Time for sinc.',
   PRIMARY KEY (`Id_Identifier`),
-  UNIQUE KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`),
-  KEY `Id_Identifier` (`Id_Identifier`,`Id_Fd`),
-  KEY `Id_Lo` (`Id_Fd`),
-  KEY `Id_Fd` (`Id_Fd`),
-  CONSTRAINT `FK_lo_identifier_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `LO_Identifier_ibfk_2` FOREIGN KEY (`Id_Identifier`) REFERENCES `lo_relation` (`Id_Target`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `FK_lo_identifier_lo_general` (`Id_Lo`,`Id_Fd`),
+  CONSTRAINT `FK_lo_identifier_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='a globally unique label that identifies the target...';
 
 -- Dump dei dati della tabella glorep_shared.lo_identifier: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_identifier` DISABLE KEYS */;
@@ -151,43 +147,48 @@ CREATE TABLE IF NOT EXISTS `lo_identifier` (
 
 -- Dump della struttura di tabella glorep_shared.lo_lifecycle
 CREATE TABLE IF NOT EXISTS `lo_lifecycle` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Version` int(11) NOT NULL,
-  `Status` varchar(50) NOT NULL,
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Version` varchar(50) DEFAULT NULL COMMENT 'The version of the Learning Object.',
+  `Status` varchar(50) NOT NULL COMMENT 'The status or condition of the Learning Object.',
   PRIMARY KEY (`Id_Lo`,`Id_Fd`),
-  CONSTRAINT `FK_lo_lifecycle_lo_metadata` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_metadata` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `FK_lo_lifecycle_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains the story and the current state of the Learning...';
 
 -- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_lifecycle` DISABLE KEYS */;
+INSERT INTO `lo_lifecycle` (`Id_Lo`, `Id_Fd`, `Version`, `Status`) VALUES
+	(21, 'glorep.unipg.it', '1.65', 'final'),
+	(23, 'glorep.unige.it', '1.0', 'final');
 /*!40000 ALTER TABLE `lo_lifecycle` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_metadata
 CREATE TABLE IF NOT EXISTS `lo_metadata` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `MetadataSchema` varchar(30) NOT NULL DEFAULT 'LOM v1.0',
-  `Language` varchar(100) NOT NULL DEFAULT 'En',
-  PRIMARY KEY (`Id_Fd`,`Id_Lo`),
-  KEY `FK_lo_metadata_lo_general` (`Id_Lo`,`Id_Fd`),
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `MetadataSchema` varchar(30) DEFAULT NULL COMMENT 'Name and version of the authoritative specificationused to create this metadata istance.',
+  `Language` varchar(100) DEFAULT NULL COMMENT 'Language of this metadata istance.',
+  PRIMARY KEY (`Id_Lo`,`Id_Fd`),
   CONSTRAINT `FK_lo_metadata_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The category describes the metadata itself.';
 
 -- Dump dei dati della tabella glorep_shared.lo_metadata: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_metadata` DISABLE KEYS */;
+INSERT INTO `lo_metadata` (`Id_Lo`, `Id_Fd`, `MetadataSchema`, `Language`) VALUES
+	(21, 'glorep.unipg.it', 'LOMv1.0', 'en'),
+	(23, 'glorep.unige.it', 'LOMv1.0', 'en');
 /*!40000 ALTER TABLE `lo_metadata` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_orcomposite
 CREATE TABLE IF NOT EXISTS `lo_orcomposite` (
-  `Id_Composite` int(11) NOT NULL,
-  `Type` varchar(1000) NOT NULL,
-  `Name` varchar(1000) NOT NULL,
-  `MinimumVersion` varchar(30) NOT NULL,
-  `MaximumVersion` varchar(30) NOT NULL,
+  `Id_Composite` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Type` varchar(1000) DEFAULT NULL COMMENT 'Technology required to use this learning object.',
+  `Name` varchar(1000) DEFAULT NULL COMMENT 'Name of the required technology to use this learning object.',
+  `MinimumVersion` varchar(30) DEFAULT NULL COMMENT 'Lowest possible version of the required technology to use this learning object.',
+  `MaximumVersion` varchar(30) DEFAULT NULL COMMENT 'Highest possible version of the required technology to use this learning object.',
   PRIMARY KEY (`Id_Composite`),
-  CONSTRAINT `LO_OrComposite_ibfk_1` FOREIGN KEY (`Id_Composite`) REFERENCES `lo_requirement` (`Id_Composite`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  UNIQUE KEY `Id_Composite` (`Id_Composite`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical capabilities necessary for using this learning...';
 
 -- Dump dei dati della tabella glorep_shared.lo_orcomposite: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_orcomposite` DISABLE KEYS */;
@@ -195,17 +196,15 @@ CREATE TABLE IF NOT EXISTS `lo_orcomposite` (
 
 -- Dump della struttura di tabella glorep_shared.lo_relation
 CREATE TABLE IF NOT EXISTS `lo_relation` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Kind` varchar(200) NOT NULL,
-  `Id_Target` int(11) NOT NULL,
-  `TimeUpd` int(11) NOT NULL,
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Id_Target` int(10) unsigned NOT NULL COMMENT 'A globally unique refers to a learning object.',
+  `kind` varchar(200) NOT NULL COMMENT 'Describe the nature of the relationship between this learning object and the target learning object',
+  `TimeUpd` int(11) NOT NULL DEFAULT '0' COMMENT 'Time for sinc.',
   PRIMARY KEY (`Id_Target`,`Id_Lo`,`Id_Fd`),
-  KEY `Id_Target` (`Id_Target`),
-  KEY `Id_Lo` (`Id_Lo`,`Id_Fd`,`Id_Target`),
-  CONSTRAINT `FK_lo_relation_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `LO_Relation_ibfk_1` FOREIGN KEY (`Id_Target`) REFERENCES `lo_annotation` (`Id_Identifier`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `FK_lo_relation_lo_general` (`Id_Lo`,`Id_Fd`),
+  CONSTRAINT `FK_lo_relation_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='a globally unique label that identifies the target...';
 
 -- Dump dei dati della tabella glorep_shared.lo_relation: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_relation` DISABLE KEYS */;
@@ -213,15 +212,12 @@ CREATE TABLE IF NOT EXISTS `lo_relation` (
 
 -- Dump della struttura di tabella glorep_shared.lo_requirement
 CREATE TABLE IF NOT EXISTS `lo_requirement` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Id_Composite` int(11) NOT NULL,
-  PRIMARY KEY (`Id_Lo`,`Id_Fd`,`Id_Composite`),
-  KEY `Id_Lo_3` (`Id_Fd`,`Id_Composite`),
-  KEY `Id_Composite` (`Id_Composite`),
-  KEY `Id_Fd` (`Id_Fd`),
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Id_Composite` int(10) unsigned NOT NULL COMMENT 'Technology required to use this learning object.',
+  PRIMARY KEY (`Id_Lo`,`Id_Fd`),
   CONSTRAINT `FK_lo_requirement_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical capabilities necessary for using this learning...';
 
 -- Dump dei dati della tabella glorep_shared.lo_requirement: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_requirement` DISABLE KEYS */;
@@ -229,40 +225,41 @@ CREATE TABLE IF NOT EXISTS `lo_requirement` (
 
 -- Dump della struttura di tabella glorep_shared.lo_rights
 CREATE TABLE IF NOT EXISTS `lo_rights` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Cost` varchar(5) NOT NULL,
-  `Copyright` varchar(5) NOT NULL,
-  `rights_Description` varchar(1000) NOT NULL,
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Cost` varchar(5) NOT NULL COMMENT 'Whether use of this learning object requires payment.',
+  `Copyright` varchar(5) NOT NULL COMMENT 'Whether copyright or other restriction apply to the use of this learning object.',
+  `rights_Description` varchar(1000) NOT NULL COMMENT 'Comments on the conditions of use of this learning object.',
   PRIMARY KEY (`Id_Lo`,`Id_Fd`),
-  KEY `Id_Lo` (`Id_Fd`),
-  KEY `Id_Fd` (`Id_Fd`),
-  CONSTRAINT `LO_Rights_ibfk_1` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `FK_lo_rights_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Intellectual property rights and condition for use this...';
 
 -- Dump dei dati della tabella glorep_shared.lo_rights: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_rights` DISABLE KEYS */;
+INSERT INTO `lo_rights` (`Id_Lo`, `Id_Fd`, `Cost`, `Copyright`, `rights_Description`) VALUES
+	(21, 'glorep.unipg.it', 'no', 'no', ''),
+	(23, 'glorep.unige.it', 'no', 'no', '');
 /*!40000 ALTER TABLE `lo_rights` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_technical
 CREATE TABLE IF NOT EXISTS `lo_technical` (
-  `Id_Lo` int(10) unsigned NOT NULL,
-  `Id_Fd` varchar(255) NOT NULL,
-  `Format` varchar(500) NOT NULL,
-  `Size` varchar(30) NOT NULL,
-  `Location` varchar(1000) NOT NULL,
-  `InstallationRemarks` varchar(1000) NOT NULL,
-  `OtherPlatformRequirements` varchar(1000) NOT NULL,
-  `Duration` varchar(50) NOT NULL,
-  `TimeUpd` int(11) NOT NULL,
+  `Id_Lo` int(10) unsigned NOT NULL COMMENT 'Refers to a Node Id.',
+  `Id_Fd` varchar(255) NOT NULL COMMENT 'A federation-unique ID.',
+  `Format` varchar(40) DEFAULT NULL COMMENT 'Technical datatypes of the learning object.',
+  `Size` varchar(30) DEFAULT NULL COMMENT 'The size of the digital learning object in bytes.',
+  `Location` varchar(1000) DEFAULT NULL COMMENT 'A string (URI or URL) that is used to access this learning object.',
+  `InstallationRemarks` varchar(1000) DEFAULT NULL COMMENT 'Description of how to install this learning object.',
+  `OtherPlatformRequirements` varchar(1000) DEFAULT NULL COMMENT 'Information about other software and hardware requirements.',
+  `Duration` varchar(50) DEFAULT NULL COMMENT 'Time a continuous learning object takes when played at intended speed.',
   PRIMARY KEY (`Id_Lo`,`Id_Fd`),
-  KEY `Id_Lo_2` (`Id_Fd`),
-  KEY `Id_Fd` (`Id_Fd`),
-  CONSTRAINT `LO_Technical_ibfk_1` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_file` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `FK_lo_technical_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical requirements and characteristics of the...';
 
 -- Dump dei dati della tabella glorep_shared.lo_technical: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_technical` DISABLE KEYS */;
+INSERT INTO `lo_technical` (`Id_Lo`, `Id_Fd`, `Format`, `Size`, `Location`, `InstallationRemarks`, `OtherPlatformRequirements`, `Duration`) VALUES
+	(21, 'glorep.unipg.it', 'png', NULL, '', '', '', ''),
+	(23, 'glorep.unige.it', 'png', NULL, '', '', '', '');
 /*!40000 ALTER TABLE `lo_technical` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
