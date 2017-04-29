@@ -443,7 +443,7 @@ class Sync{
         $statement = $local_db->prepare("update node_revision set title = ?, timestamp = ? where nid = ?");
         $statement->bind_param("sii",$row["Title"],$tmp_changed,$row["Id_Lo"]);
         $statement->execute();
-        $state->close();
+        $statement->close();
       }
 
 
