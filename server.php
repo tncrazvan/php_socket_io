@@ -2,10 +2,10 @@
 require_once("./utils/readers/ServerReader64.php");
 require_once("./utils/database/Sync.php");
 
-$general_ini=parse_ini_file("./settings/general_unipg.ini");
+$general_ini=parse_ini_file("./settings/general.ini");
 $sync = new class extends Thread{
 	public function run(){
-		$general_ini=parse_ini_file("./settings/general_unipg.ini");
+		$general_ini=parse_ini_file("./settings/general.ini");
     $local_db=new DBConnection("localhost",$general_ini);
     $shared_db=new DBConnection("sharedhost",$general_ini);
 
