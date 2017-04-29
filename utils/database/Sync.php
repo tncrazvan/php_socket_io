@@ -29,6 +29,7 @@ class Sync{
         if ($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
         $statement->close();
 
+
         //fetching the row from general
         $result=$local_db->query("select * from lo_general where Id_Fd like '$my_fed' and id = ".$row["local_id"]);
 
@@ -169,6 +170,20 @@ class Sync{
           }
         }
 
+        /*updating contribute of the object to the shared database*/
+        $string = "select * from lo_contribute where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+        $result_tmp = $local_db->query($string);
+        if(mysqli_num_rows($result_tmp) >= 1){
+          while($item = mysqli_fetch_array($result_tmp)){
+            $statement = $shared_db->prepare("insert into lo_contribute(Id_Lo,Id_Fd,Role,Entity,Date) value(?,?,?,?,?)");
+            $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Role"],$item["Entity"],$item["Date"]);
+            $statement->execute();
+            $statement->close();
+          }
+        }else{
+            echo "\n\n\tNOT OK CONTRIBUTE\n\n";
+        }
+
         echo "\n\t\t>>Row ".$row["id"]." has been updated.";
       }
     }
@@ -292,6 +307,20 @@ class Sync{
             }
           }
 
+          /*uploading contribute of the object to the shared database*/
+          $string = "select * from lo_contribute where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+          $result_tmp = $local_db->query($string);
+          if(mysqli_num_rows($result_tmp) >= 1){
+            while($item = mysqli_fetch_array($result_tmp)){
+              $statement = $shared_db->prepare("insert into lo_contribute(Id_Lo,Id_Fd,Role,Entity,Date) value(?,?,?,?,?)");
+              $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Role"],$item["Entity"],$item["Date"]);
+              $statement->execute();
+              $statement->close();
+            }
+          }else{
+              echo "\n\n\tNOT OK CONTRIBUTE\n\n";
+          }
+
 
           echo "\n\t\t>>Row ".$row["id"]." has been uploaded.";
 
@@ -332,7 +361,90 @@ class Sync{
       $statement=$local_db->prepare("delete from lo_general where Id_Fd like ? and Id_Lo = ?");
       $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
       if($statement->execute() == false) echo "\n\t\tERROR:".$statement->error;
+      $deleted_rows = $statement->affected_rows;
       $statement->close();
+
+      if($deleted_rows == 0){
+        /*creating node*/
+        $type="linkableobject";
+        $tmp_user=7;
+        $tmp_status=1;
+        $tmp_created=time();
+        $tmp_comment = 2;
+        $tmp_promote = 1;
+        $tmp_sticky = 0;
+        $tmp_tnid = 0;
+        $tmp_translate = 0;
+
+        /*node statement*/
+        $statement = $local_db->prepare("insert into node("
+        ."nid,"
+        ."vid,Id_Fd,type,"
+        ."language,title,uid,"
+        ."status,created,changed,"
+        ."comment,promote,sticky,"
+        ."tnid,translate) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        $statement->bind_param("iissssiiiiiiiii",
+          $row["Id_Lo"],
+          $row["Id_Lo"] ,$row["Id_Fd"], $type,
+          $row["Language"], $row["Title"], $tmp_user,
+          $tmp_status, $tmp_created, $tmp_created,
+          $tmp_comment, $tmp_promote, $tmp_sticky,
+          $tmp_tnid, $tmp_translate
+        );
+        $statement->execute();
+        $tmp_nid = $statement->insert_id;
+        $statement->close();
+
+        $tmp_gid = 0;
+        $tmp_realm = "all";
+        $tmp_grant_view = 1;
+        $tmp_grant_update = 0;
+        $tmp_grant_delete = 0;
+
+        /*node_access statement*/
+        $statement = $local_db->prepare("insert into node_access(nid,gid,realm,grant_view,grant_update,grant_delete) value(?,?,?,?,?,?)");
+        $statement->bind_param("iisiii",$tmp_nid,$tmp_gid,$tmp_realm,$tmp_grant_view,$tmp_grant_update,$tmp_grant_delete);
+        $statement->execute();
+        $statement->close();
+
+        $tmp_log = "";
+
+        /*node_revision statement*/
+        $statement = $local_db->prepare("insert into node_revision("
+        ."nid,vid,uid,"
+        ."title,log,timestamp,"
+        ."status,comment,promote,"
+        ."sticky) value(?,?,?,?,?,?,?,?,?,?)");
+        $statement->bind_param("iiissiiiii",
+          $tmp_nid,$row["Id_Lo"],$tmp_user,
+          $row["Title"],$tmp_log,$tmp_created,
+          $tmp_status,$tmp_comment,$tmp_promote,
+          $tmp_sticky
+        );
+        $statement->execute();
+        $statement->close();
+
+        $tmp_cid = 0;
+        $tmp_comment_count = 0;
+        $statement = $local_db->prepare("insert into node_comment_statistics(nid,cid,last_comment_timestamp,last_comment_uid,comment_count) value(?,?,?,?,?)");
+        $statement->bind_param("iiiii",$tmp_nid,$tmp_cid,$tmp_created,$tmp_user,$tmp_comment_count);
+        $statement->execute();
+        $statement->close();
+      }else{
+        /*updating existing node*/
+        $tmp_changed=time();
+        $statement = $local_db->prepare("update node set language = ?, title = ?, changed = ? where nid = ? and Id_Fd = ?");
+        $statement->bind_param("ssiis",$row["Language"],$row["Title"],$tmp_changed,$row["Id_Lo"],$row["Id_Fd"]);
+        $statement->execute();
+        $statement->close();
+
+        $statement = $local_db->prepare("update node_revision set title = ?, timestamp = ? where nid = ?");
+        $statement->bind_param("sii",$row["Title"],$tmp_changed,$row["Id_Lo"]);
+        $statement->execute();
+        $state->close();
+      }
 
 
       $str="insert into lo_general(
@@ -364,8 +476,6 @@ class Sync{
         $statement->bind_param("isss",$item["Id_Lo"],$item["Id_Fd"],$item["Version"],$item["Status"]);
         $statement->execute();
         $statement->close();
-      }else{
-        echo "\n\nNOT OK\n\n";
       }
 
 
@@ -442,7 +552,17 @@ class Sync{
         }
       }
 
-
+      /*downloading contribute of the object*/
+      $string = "select * from lo_contribute where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        while($item = mysqli_fetch_array($result_tmp)){
+          $statement = $local_db->prepare("insert into lo_contribute(Id_Lo,Id_Fd,Role,Entity,Date) value(?,?,?,?,?)");
+          $statement->bind_param("issss",$item["Id_Lo"],$item["Id_Fd"],$item["Role"],$item["Entity"],$item["Date"]);
+          $statement->execute();
+          $statement->close();
+        }
+      }
 
 
       echo "\n\t\t<<Row ".$row["id"]." has been downloaded.";

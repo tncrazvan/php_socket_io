@@ -63,9 +63,6 @@ CREATE TABLE IF NOT EXISTS `lo_educational` (
 
 -- Dump dei dati della tabella glorep_shared.lo_educational: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_educational` DISABLE KEYS */;
-INSERT INTO `lo_educational` (`Id_Lo`, `Id_Fd`, `InteractivityType`, `LearningResourceType`, `InteractivityLevel`, `SemanticDensity`, `IntendedEndUserRole`, `Context`, `TypicalAgeRange`, `Difficulty`, `TypicalLearningTime`, `edu_Description`, `edu_Language`) VALUES
-	(21, 'glorep.unipg.it', 'active', 'exercise', 'very low', 'very low', 'teacher', 'school', '', 'very easy', '', '', 'en'),
-	(23, 'glorep.unige.it', 'active', 'exercise', 'very low', 'very low', 'teacher', 'school', '', 'very easy', '', '', 'en');
 /*!40000 ALTER TABLE `lo_educational` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_federation
@@ -96,9 +93,6 @@ CREATE TABLE IF NOT EXISTS `lo_file` (
 
 -- Dump dei dati della tabella glorep_shared.lo_file: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_file` DISABLE KEYS */;
-INSERT INTO `lo_file` (`Id_Lo`, `Id_Fd`, `url`, `filename`, `filesize`, `filemime`) VALUES
-	(21, 'glorep.unipg.it', 'http://127.0.0.1/glorep/sites/default/files/LOM_1.PNG', 'LOM.PNG', '86289', 'image/png'),
-	(23, 'glorep.unige.it', 'http://127.0.0.1/glorep2/sites/default/files/GlorepSyncIO.png', 'GlorepSyncIO.png', '1036244', 'image/png');
 /*!40000 ALTER TABLE `lo_file` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_general
@@ -119,13 +113,10 @@ CREATE TABLE IF NOT EXISTS `lo_general` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`Id_Lo`,`Id_Fd`),
   KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`)
-) ENGINE=InnoDB AUTO_INCREMENT=292 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
+) ENGINE=InnoDB AUTO_INCREMENT=299 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_general: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_general` DISABLE KEYS */;
-INSERT INTO `lo_general` (`id`, `Id_Lo`, `Id_Fd`, `shared_id`, `Title`, `Language`, `Description`, `Keyword`, `Coverage`, `Structure`, `Aggregation_Level`, `Deleted`, `TimeUpd`) VALUES
-	(290, 23, 'glorep.unige.it', NULL, 'test', 'en', 'test', '', '', 'atomic', 1, 'no', 1493412699),
-	(291, 21, 'glorep.unipg.it', NULL, 'test unipg (modificato 2)', 'en', 'test', '', '', 'atomic', 1, 'no', 1493414309);
 /*!40000 ALTER TABLE `lo_general` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_identifier
@@ -157,9 +148,6 @@ CREATE TABLE IF NOT EXISTS `lo_lifecycle` (
 
 -- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_lifecycle` DISABLE KEYS */;
-INSERT INTO `lo_lifecycle` (`Id_Lo`, `Id_Fd`, `Version`, `Status`) VALUES
-	(21, 'glorep.unipg.it', '1.65', 'final'),
-	(23, 'glorep.unige.it', '1.0', 'final');
 /*!40000 ALTER TABLE `lo_lifecycle` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_metadata
@@ -174,9 +162,6 @@ CREATE TABLE IF NOT EXISTS `lo_metadata` (
 
 -- Dump dei dati della tabella glorep_shared.lo_metadata: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_metadata` DISABLE KEYS */;
-INSERT INTO `lo_metadata` (`Id_Lo`, `Id_Fd`, `MetadataSchema`, `Language`) VALUES
-	(21, 'glorep.unipg.it', 'LOMv1.0', 'en'),
-	(23, 'glorep.unige.it', 'LOMv1.0', 'en');
 /*!40000 ALTER TABLE `lo_metadata` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_orcomposite
@@ -236,9 +221,6 @@ CREATE TABLE IF NOT EXISTS `lo_rights` (
 
 -- Dump dei dati della tabella glorep_shared.lo_rights: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_rights` DISABLE KEYS */;
-INSERT INTO `lo_rights` (`Id_Lo`, `Id_Fd`, `Cost`, `Copyright`, `rights_Description`) VALUES
-	(21, 'glorep.unipg.it', 'no', 'no', ''),
-	(23, 'glorep.unige.it', 'no', 'no', '');
 /*!40000 ALTER TABLE `lo_rights` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_technical
@@ -257,9 +239,6 @@ CREATE TABLE IF NOT EXISTS `lo_technical` (
 
 -- Dump dei dati della tabella glorep_shared.lo_technical: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_technical` DISABLE KEYS */;
-INSERT INTO `lo_technical` (`Id_Lo`, `Id_Fd`, `Format`, `Size`, `Location`, `InstallationRemarks`, `OtherPlatformRequirements`, `Duration`) VALUES
-	(21, 'glorep.unipg.it', 'png', NULL, '', '', '', ''),
-	(23, 'glorep.unige.it', 'png', NULL, '', '', '', '');
 /*!40000 ALTER TABLE `lo_technical` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
