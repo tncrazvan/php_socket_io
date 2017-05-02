@@ -378,15 +378,15 @@ class Sync{
 
         /*node statement*/
         $statement = $local_db->prepare("insert into node("
-
+        ."nid,"
         ."vid,Id_Fd,type,"
         ."language,title,uid,"
         ."status,created,changed,"
         ."comment,promote,sticky,"
-        ."tnid,translate) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        ."tnid,translate) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        $statement->bind_param("issssiiiiiiiii",
-
+        $statement->bind_param("iissssiiiiiiiii",
+          $row["Id_Lo"],
           $row["Id_Lo"] ,$row["Id_Fd"], $type,
           $row["Language"], $row["Title"], $tmp_user,
           $tmp_status, $tmp_created, $tmp_created,
