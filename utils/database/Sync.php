@@ -197,7 +197,7 @@ class Sync{
   //uploads data from left database (starting from row $offset) to right database
   public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed){
 
-      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset";
+      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset and Id_Fd not like '$my_fed'";
       $result=$local_db->query($str);
       $drafts_counter=0;
       while($row=mysqli_fetch_array($result)){
