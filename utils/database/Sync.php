@@ -364,6 +364,10 @@ class Sync{
       $deleted_rows = $statement->affected_rows;
       $statement->close();
 
+      $string = 'select status from lo_lifecycle where Id_Lo = '.$row["Id_Lo"].' and Id_Fd like \''.$row["Id_Fd"].'\'';
+      $query=$shared_db->query($string);
+      $item=mysqli_fetch_array($query);
+
       if($deleted_rows == 0){
         /*creating node*/
         $type="linkableobject";
@@ -434,14 +438,19 @@ class Sync{
         $statement->close();
       }else{
         /*updating existing node*/
+
+        $string = 'select nid from node where vid = '.$row["Id_Lo"].' and Id_Fd like \''.$row["Id_Fd"].'\'';
+        $query=$shared_db->query($string);
+        $tmp_nid=mysqli_fetch_array($query);
+
         $tmp_changed=time();
-        $statement = $local_db->prepare("update node set language = ?, title = ?, changed = ? where nid = ? and Id_Fd = ?");
-        $statement->bind_param("ssiis",$row["Language"],$row["Title"],$tmp_changed,$row["Id_Lo"],$row["Id_Fd"]);
+        $statement = $local_db->prepare("update node set language = ?, title = ?, changed = ? where nid = ?");
+        $statement->bind_param("ssii",$row["Language"],$row["Title"],$tmp_changed,$tmp_nid);
         $statement->execute();
         $statement->close();
 
         $statement = $local_db->prepare("update node_revision set title = ?, timestamp = ? where nid = ?");
-        $statement->bind_param("sii",$row["Title"],$tmp_changed,$row["Id_Lo"]);
+        $statement->bind_param("sii",$row["Title"],$tmp_changed,$tmp_nid);
         $statement->execute();
         $statement->close();
       }
@@ -455,7 +464,6 @@ class Sync{
         ) "
           ."value (?,?,?,?,?,?,?,?,?,?,?)";
 
-      $statement = $local_db->prepare($str);
       $statement->bind_param("isissssssii",
         $row["Id_Lo"], $row["Id_Fd"], $row["id"],
         $row["Title"], $row["Language"], $row["Description"],
