@@ -463,7 +463,7 @@ class Sync{
           Aggregation_Level, TimeUpd
         ) "
           ."value (?,?,?,?,?,?,?,?,?,?,?)";
-
+      $statement = $local_db->prepare($str);
       $statement->bind_param("isissssssii",
         $row["Id_Lo"], $row["Id_Fd"], $row["id"],
         $row["Title"], $row["Language"], $row["Description"],
