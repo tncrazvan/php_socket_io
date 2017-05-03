@@ -440,7 +440,7 @@ class Sync{
         /*updating existing node*/
 
         $string = "select nid from node where vid = ".$row["Id_Lo"]." and Id_Fd like '".$row["Id_Fd"]."'";
-        $query=$shared_db->query($string);
+        $query=$local_db->query($string);
         $tmp_nid=mysqli_fetch_array($query);
 
         $tmp_changed=time();
