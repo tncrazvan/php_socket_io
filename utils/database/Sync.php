@@ -16,8 +16,8 @@ class Sync{
       $r = mysqli_fetch_array($r);
 
       if($r["Status"]=="draft" || $r["Id_Fd"] != $my_fed){
-        $statement = $local_db->prepare("delete from lo_update_log where id=?");
-        $statement->bind_param("i",$row["id"]);
+        $statement = $local_db->prepare("delete from lo_update_log where id <= ? and  local_id = ?");
+        $statement->bind_param("ii",$row["id"],$row["local_id"]);
         $statement->execute();
         $statement->close();
       }else{
@@ -367,7 +367,7 @@ class Sync{
       if($deleted_rows == 0){
         /*creating node*/
         $type="linkableobject";
-        $tmp_user=7;
+        $tmp_user=0;
         $tmp_status=1;
         $tmp_created=time();
         $tmp_comment = 2;
