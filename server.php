@@ -3,6 +3,8 @@ require_once("./utils/readers/ServerReader64.php");
 require_once("./utils/database/Sync.php");
 
 $general_ini=parse_ini_file("./settings/general.ini");
+
+
 $sync = new class extends Thread{
 	public function run(){
 		$general_ini=parse_ini_file("./settings/general.ini");
@@ -86,7 +88,7 @@ $sync = new class extends Thread{
   }
 };
 
-$sync->start() && $sync->join();
+$sync->start();
 
 
 /*

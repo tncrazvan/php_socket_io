@@ -1,6 +1,7 @@
 <?php
 require_once("./utils/readers/Reader64.php");
 require_once("./utils/database/DBConnection.php");
+require_once("./utils/messages/RoutineMessage64.php");
 require_once("./utils/database/Sync.php");
 class ServerReader64 extends Reader64{
   function ServerReader($sender_socket,$bytes=1){
@@ -27,6 +28,24 @@ class ServerReader64 extends Reader64{
 
       case "text-plain":
         echo "\n\t\tCLIENT SAYS: ".$data["content64"];
+      break;
+
+      case "routine-request":
+
+        $general_ini=parse_ini_file("./settings/general.ini");
+        $local_db=new DBConnection("localhost",$general_ini);
+        $shared_db=new DBConnection("sharedhost",$general_ini);
+        $my_fed=$general_ini["federation_name"];
+
+        switch ($data["routine-type"]) {
+          case 'download':
+            Sync::download_after_pffset($data["offset"],$shared_db,$local_db,$my_fed);
+            break;
+          case 'upload':
+            Sync::upload_after_offset($data["offset"],$local_db,$shared_db,$my_fed);
+            break;
+        }
+
       break;
     }
 
