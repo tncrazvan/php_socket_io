@@ -38,10 +38,8 @@ CREATE TABLE IF NOT EXISTS `lo_contribute` (
   CONSTRAINT `FK_lo_contribute_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Those Entities that have contibuted to the state of this...';
 
--- Dump dei dati della tabella glorep_shared.lo_contribute: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_contribute: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_contribute` DISABLE KEYS */;
-INSERT INTO `lo_contribute` (`Id_Lo`, `Id_Fd`, `Role`, `Entity`, `Date`) VALUES
-	(55, 'glorep.unipg.it', 'creator', 'test 1', '2017-02-05 22:37:31');
 /*!40000 ALTER TABLE `lo_contribute` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_educational
@@ -63,10 +61,8 @@ CREATE TABLE IF NOT EXISTS `lo_educational` (
   CONSTRAINT `FK_lo_educational_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical capabilities necessary for using this learning...';
 
--- Dump dei dati della tabella glorep_shared.lo_educational: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_educational: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_educational` DISABLE KEYS */;
-INSERT INTO `lo_educational` (`Id_Lo`, `Id_Fd`, `InteractivityType`, `LearningResourceType`, `InteractivityLevel`, `SemanticDensity`, `IntendedEndUserRole`, `Context`, `TypicalAgeRange`, `Difficulty`, `TypicalLearningTime`, `edu_Description`, `edu_Language`) VALUES
-	(55, 'glorep.unipg.it', 'active', 'exercise', 'very low', 'very low', 'teacher', 'school', '', 'very easy', '', '', 'en');
 /*!40000 ALTER TABLE `lo_educational` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_federation
@@ -95,10 +91,8 @@ CREATE TABLE IF NOT EXISTS `lo_file` (
   CONSTRAINT `FK_lo_file_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Learning Object files';
 
--- Dump dei dati della tabella glorep_shared.lo_file: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_file: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_file` DISABLE KEYS */;
-INSERT INTO `lo_file` (`Id_Lo`, `Id_Fd`, `url`, `filename`, `filesize`, `filemime`) VALUES
-	(55, 'glorep.unipg.it', 'http://127.0.0.1/glorep//glorep/sites/default/files/data%20-%20controller.png', 'data - controller.png', '36598', 'image/png');
 /*!40000 ALTER TABLE `lo_file` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_general
@@ -118,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `lo_general` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`Id_Lo`,`Id_Fd`),
   KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_general: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_general` DISABLE KEYS */;
@@ -151,10 +145,8 @@ CREATE TABLE IF NOT EXISTS `lo_lifecycle` (
   CONSTRAINT `FK_lo_lifecycle_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains the story and the current state of the Learning...';
 
--- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_lifecycle` DISABLE KEYS */;
-INSERT INTO `lo_lifecycle` (`Id_Lo`, `Id_Fd`, `Version`, `Status`) VALUES
-	(55, 'glorep.unipg.it', '1.0', 'final');
 /*!40000 ALTER TABLE `lo_lifecycle` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_metadata
@@ -167,10 +159,8 @@ CREATE TABLE IF NOT EXISTS `lo_metadata` (
   CONSTRAINT `FK_lo_metadata_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='The category describes the metadata itself.';
 
--- Dump dei dati della tabella glorep_shared.lo_metadata: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_metadata: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_metadata` DISABLE KEYS */;
-INSERT INTO `lo_metadata` (`Id_Lo`, `Id_Fd`, `MetadataSchema`, `Language`) VALUES
-	(55, 'glorep.unipg.it', 'LOMv1.0', 'en');
 /*!40000 ALTER TABLE `lo_metadata` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_orcomposite
@@ -228,10 +218,8 @@ CREATE TABLE IF NOT EXISTS `lo_rights` (
   CONSTRAINT `FK_lo_rights_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Intellectual property rights and condition for use this...';
 
--- Dump dei dati della tabella glorep_shared.lo_rights: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_rights: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_rights` DISABLE KEYS */;
-INSERT INTO `lo_rights` (`Id_Lo`, `Id_Fd`, `Cost`, `Copyright`, `rights_Description`) VALUES
-	(55, 'glorep.unipg.it', 'no', 'no', '');
 /*!40000 ALTER TABLE `lo_rights` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_technical
@@ -248,10 +236,8 @@ CREATE TABLE IF NOT EXISTS `lo_technical` (
   CONSTRAINT `FK_lo_technical_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Technical requirements and characteristics of the...';
 
--- Dump dei dati della tabella glorep_shared.lo_technical: ~1 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_technical: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_technical` DISABLE KEYS */;
-INSERT INTO `lo_technical` (`Id_Lo`, `Id_Fd`, `Format`, `Size`, `Location`, `InstallationRemarks`, `OtherPlatformRequirements`, `Duration`) VALUES
-	(55, 'glorep.unipg.it', 'test 1', NULL, '', '', '', '');
 /*!40000 ALTER TABLE `lo_technical` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
