@@ -29,7 +29,7 @@ apt-get install php7.0-zts-odbc
 cd ~
 git clone https://github.com/tncrazvan/php_socket_io.git
 cd ~/php_socket_io/utils
-mysql < database/dump/dbunipg.sql -u root -p
+mysql < database/dump/localrep.sql -u root -p
 
 cp mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
