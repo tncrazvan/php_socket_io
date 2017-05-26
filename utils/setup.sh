@@ -43,7 +43,7 @@ sudo chmod 777 php_socket_io -R
 cd $1/php_socket_io/utils
 mysql < database/dump/localrep.sql -u root -p
 
-cp $1/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+cp $1/php_socket_io/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 apt-get install apache2
 y
