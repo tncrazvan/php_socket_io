@@ -27,8 +27,9 @@ cp $1/php_socket_io/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 apt-get install apache2 -y
 apt-get install libapache2-mod-php7.0 -y
-cd /var/www/html/* -fr
+cd /var/www/html
 git clone https://github.com/tncrazvan/glorep.git /var/www/html
+chmod 777 /var/www/html/* -R
 cd /var/www/html/sites/default
 mkdir files
 mkdir files/collabrep
