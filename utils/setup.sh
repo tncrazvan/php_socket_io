@@ -1,7 +1,7 @@
 #!/bin/bash
 apt-get install -y language-pack-en-base
-#locale-gen "en_US.UTF-8"
-#dpkg-reconfigure locales
+locale-gen "en_US.UTF-8"
+dpkg-reconfigure locales
 LC_ALL=en.US.UTF-8
 add-apt-repository ppa:ondrej/php-zts
 apt-get update
