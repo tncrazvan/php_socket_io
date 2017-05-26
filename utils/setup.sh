@@ -10,7 +10,7 @@ y
 
 apt-get install git
 y
-cd ~
+cd $1
 git clone https://github.com/krakjoe/pthreads.git
 cd pthreads
 phpize
@@ -37,10 +37,10 @@ y
 apt-get install php7.0-zts-odbc
 y
 
-cd ~
+cd $1
 git clone https://github.com/tncrazvan/php_socket_io.git
 sudo chmod 777 php_socket_io -R
-cd ~/php_socket_io/utils
+cd $1/php_socket_io/utils
 mysql < database/dump/localrep.sql -u root -p
 
 cp mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -49,21 +49,21 @@ apt-get install apache2
 y
 apt-get install libapache2-mod-php7.0
 y
-cd /var/www/html
-rm ./* -fr
+cd /var/www/html/* -fr
 git clone https://github.com/tncrazvan/glorep.git /var/www/html
 
-cd sites/default/
+cd /var/www/html/sites/default
 mkdir files
+mkdir files/collabrep
+mkdir files/collabrep/cache
 cp default.settings.php settings.php
-chmod 777 ./* -R
-cd /var/www/html
+chmod 777 /var/www/html/* -R
 apt-get install php7.0-gd
 y
 apt-get install php7.0-mysql
 y
 apt-get install php7.0-mbstring
 y
-cd ~/php_socket_io
+cd $1/php_socket_io
 php init.php
 service apache2 restart
