@@ -15,6 +15,7 @@ mkdir -p /etc/php/7.0-zts/conf.d/
 echo "extension=pthreads.so" > /etc/php/7.0-zts/conf.d/pthreads.ini
 cd /etc/php/7.0-zts/cli/conf.d
 sudo ln -s ../../conf.d/pthreads.ini
+rm /var/cache/apt/archives/lock
 apt-get install mysql-server -y
 mysql_secure_installation
 apt-get install php7.0-zts-mysql -y
