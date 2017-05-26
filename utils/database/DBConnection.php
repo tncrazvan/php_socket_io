@@ -11,44 +11,45 @@ class DBConnection {
           $last_error,
           $current_index,
           $autocommit=false;
-  public function __construct($host,$user_or_details,$password=null,$db=null,$port=null){
+  public function __construct($host,$settings,$password=null,$db=null,$port=null){
     /*
-      if login is not provided, check if $user_or_details is an array,
+      if login is not provided, check if $settings is an array,
       if it is an array, then assume that array contains the login details
       and use it to login the database
     */
-    if(is_null($password) && is_null($db) && is_null($port) && is_array($user_or_details)){
+    if(is_null($password) && is_null($db) && is_null($port) && is_array($settings)){
       switch($host){
         case "local":
         case "127.0.0.1":
         case "localhost":
           $this->mysqli=mysqli_connect(
-            $user_or_details["local_address"],
-            $user_or_details["local_username"],
-            $user_or_details["local_password"],
-            $user_or_details["local_database_name"],
-            $user_or_details["local_database_port"]);
+            $settings["local_address"],
+            $settings["local_username"],
+            $settings["local_password"],
+            $settings["local_database_name"],
+            $settings["local_database_port"]);
 
-          $this->user = $user_or_details["local_username"];
-          $this->password = $user_or_details["local_password"];
-          $this->db = $user_or_details["local_database_name"];
+          $this->user = $settings["local_username"];
+          $this->password = $settings["local_password"];
+          $this->db = $settings["local_database_name"];
         break;
         case "shared":
         case "sharedhost":
           $this->mysqli=mysqli_connect(
-            $user_or_details["shared_address"],
-            $user_or_details["shared_username"],
-            $user_or_details["shared_password"],
-            $user_or_details["shared_database_name"],
-            $user_or_details["shared_database_port"]);
+            $settings["shared_address"],
+            $settings["shared_username"],
+            $settings["shared_password"],
+            $settings["shared_database_name"],
+            $settings["shared_database_port"]);
 
-          $this->user = $user_or_details["shared_username"];
-          $this->password = $user_or_details["shared_password"];
-          $this->db = $user_or_details["shared_database_name"];
+          $this->user = $settings["shared_username"];
+          $this->password = $settings["shared_password"];
+          $this->db = $settings["shared_database_name"];
         break;
       }
     }else{
-      $this->user = $user_or_details;
+      //treat $settings as if it was the username of the login
+      $this->user = $settings;
       $this->password = $password;
       $this->db = $db;
     }

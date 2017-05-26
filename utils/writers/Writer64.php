@@ -12,7 +12,6 @@ abstract class Writer64 extends Thread{
   public function run(){
     $this->callback($this->socket);
     socket_shutdown($this->socket);
-    socket_close($this->socket);
   }
 
   protected abstract function callback($socket);

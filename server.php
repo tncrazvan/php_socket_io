@@ -1,14 +1,20 @@
 <?php
+//let this script run forever
 set_time_limit(0);
-require_once("./utils/readers/ServerReader64.php");
-require_once("./utils/database/Sync.php");
+//give this script infinite ammount of memory
+ini_set("memory_imit",-1);
 
-$general_ini=parse_ini_file("./settings/general.ini");
+define("WORKSPACE",__DIR__);
 
+require_once(WORKSPACE."./utils/readers/ServerReader64.php");
+require_once(WORKSPACE."./utils/database/Sync.php");
+
+//parse settings file
+$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
 
 $sync = new class extends Thread{
 	public function run(){
-		$general_ini=parse_ini_file("./settings/general.ini");
+		$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
     $local_db=new DBConnection("localhost",$general_ini);
     $shared_db=new DBConnection("sharedhost",$general_ini);
 
@@ -16,6 +22,9 @@ $sync = new class extends Thread{
     $sleep_time=$general_ini["sleep_time"];
 
     while(true){
+			$general_ini = parse_ini_file(WORKSPACE."./settings/general.ini");
+			$my_fed=$general_ini["federation_name"];
+	    $sleep_time=$general_ini["sleep_time"];
 
       $query1=$local_db->query("select * from lo_general as G left join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Fd like '$my_fed' order by G.Id_Lo desc limit 1;");
       $query2=$shared_db->query("select * from lo_general where id_fd like '$my_fed' order by id_lo desc limit 1");
@@ -35,32 +44,31 @@ $sync = new class extends Thread{
       //using $query1 and $query2 here (UPLOADING)
       if(mysqli_num_rows($query2)==0){
         if(mysqli_num_rows($query1)>0){
-          echo "\n\t>>Trying to upload everything to the shared database...";
-          Sync::upload_all($local_db,$shared_db,$my_fed);
+          echo "\n\t>>Trying to upload everything (limit ".$general_ini["upload_limit"].")...";
+          Sync::upload_all($local_db,$shared_db,$my_fed,$general_ini["upload_limit"]);
         }else{
           echo "\n\tShared database is up to date.";
         }
       }else if($local_r1["Id_Lo"] > $shared_r1["Id_Lo"] && $local_r1["Status"]!="draft"){
-        echo "\n\t>>Uploading...";
-        Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed);
+        echo "\n\t>>Uploading (limit ".$general_ini["upload_limit"].")...";
+        Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed,$general_ini["upload_limit"]);
       }else{
         echo "\n\tShared database is up to date.";
       }
 
 
 
-
       //using $query3 and $query4 here (DOWNLOADING)
       if(mysqli_num_rows($query3)==0){
         if(mysqli_num_rows($query4)>0){
-          echo "\n\t<<Downloading everything from the shared database.";
-          Sync::download_all($shared_db,$local_db,$my_fed);
+          echo "\n\t<<Downloading everything from the shared database (limit ".$general_ini["download_limit"].").";
+          Sync::download_all($shared_db,$local_db,$my_fed,$general_ini["download_limit"]);
         }else{
           echo "\n\tLocal.db is up to date.";
         }
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
-        echo "\n\t<<Downloading...";
-        Sync::download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed);
+        echo "\n\t<<Downloading (limit ".$general_ini["download_limit"].")...";
+        Sync::download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed,$general_ini["download_limit"]);
       }else{
         echo "\n\tLocal.db is up to date.";
       }
@@ -70,8 +78,8 @@ $sync = new class extends Thread{
       $last_update=Sync::get_last_update_log($local_db);
 
       if($last_update!=null){
-        echo "\n\t>>Updating everything...";
-        Sync::update_all($local_db,$shared_db,$my_fed);
+        echo "\n\t>>Updating everything (limit ".$general_ini["update_limit"].")...";
+        Sync::update_all($local_db,$shared_db,$my_fed,$general_ini["update_limit"]);
       }else{
         echo "\n\tNo updates available.";
       }
@@ -133,11 +141,14 @@ if(!socket_listen($socket,$general_ini["listener_port"])){
 while($allowed_to_run){
 	//accepting 1 incoming connection
 	$client=socket_accept($socket);
+
+
+	$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
 	/*
 		ServerReader64 creates a Reader64, which in turn creates a Thread
 		which will read the client's message in chunks of 2048 bytes
 	*/
-$sr=new ServerReader64($client/*client's socket*/,$general_ini["server_reader_mtu"]/*MTU*/);
+	$sr=new ServerReader64($client/*client's socket*/,$general_ini["server_reader_mtu"]/*MTU*/);
 
 	//starting the reader (which is a thread)
 	$sr->start();

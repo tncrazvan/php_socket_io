@@ -1,10 +1,10 @@
 <?php
 
 class RoutineMessage64{
-  private $type,$offset;
-  public function __construct($type,$offset){
+  private $type,$limit;
+  public function __construct($type,$limit=100){
     $this->type=$type;
-    $this->offset=$offset;
+    $this->limit=$limit;
   }
 
   public function send_to($socket){
@@ -17,7 +17,7 @@ class RoutineMessage64{
         array(
           "content-type"=>"routine-request",
           "routine-type"=>$this->type,
-          "offset"=>$this->offset
+          "limit"=>$this->limit
         )
       )
     );

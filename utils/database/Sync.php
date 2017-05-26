@@ -1,8 +1,8 @@
 <?php
 class Sync{
 
-  public static function update_after_offset($offset,$local_db,$shared_db,$my_fed){
-    $str="select * from lo_update_log where id > $offset";
+  public static function update_after_offset($offset,$local_db,$shared_db,$my_fed,$limit=100){
+    $str="select * from lo_update_log where id > $offset limit $limit";
     $query=$local_db->query($str);
     while($row=mysqli_fetch_array($query)){
       /*
@@ -189,15 +189,15 @@ class Sync{
     }
   }
 
-  public static function update_all($local_db,$shared_db,$my_fed){
-    Sync::update_after_offset(0,$local_db,$shared_db,$my_fed);
+  public static function update_all($local_db,$shared_db,$my_fed,$limit=100){
+    Sync::update_after_offset(0,$local_db,$shared_db,$my_fed,$limit);
   }
 
 
   //uploads data from left database (starting from row $offset) to right database
-  public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed){
+  public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed,$limit){
 
-      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset and Id_Fd like '$my_fed'";
+      $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset and Id_Fd like '$my_fed' limit $limit";
       $result=$local_db->query($str);
       $drafts_counter=0;
       while($row=mysqli_fetch_array($result)){
@@ -345,13 +345,13 @@ class Sync{
 
 
   //uploads data from left database to right database
-  public static function upload_all($local_db,$shared_db,$my_fed){
-    Sync::upload_after_offset(0,$local_db,$shared_db,$my_fed);
+  public static function upload_all($local_db,$shared_db,$my_fed,$limit=100){
+    Sync::upload_after_offset(0,$local_db,$shared_db,$my_fed,$limit);
   }
 
 
-  public static function download_after_offset($offset,$shared_db,$local_db,$my_fed){
-    $string = "select * from lo_general where Id_Fd not like '$my_fed' AND id > $offset";
+  public static function download_after_offset($offset,$shared_db,$local_db,$my_fed,$limit=100){
+    $string = "select * from lo_general where Id_Fd != '$my_fed' AND id > $offset limit $limit";
     $query=$shared_db->query($string);
     while($row=mysqli_fetch_array($query)){
       /*
@@ -363,10 +363,9 @@ class Sync{
       if($statement->execute() == false) echo "\n\t\tERROR:".$statement->error;
       $deleted_rows = $statement->affected_rows;
       $statement->close();
-
       $string = 'select status from lo_lifecycle where Id_Lo = '.$row["Id_Lo"].' and Id_Fd like \''.$row["Id_Fd"].'\'';
-      $query=$shared_db->query($string);
-      $item=mysqli_fetch_array($query);
+      $query2=$shared_db->query($string);
+      $item=mysqli_fetch_array($query2);
 
       if($deleted_rows == 0){
         /*creating node*/
@@ -440,8 +439,8 @@ class Sync{
         /*updating existing node*/
 
         $string = "select nid from node where vid = ".$row["Id_Lo"]." and Id_Fd like '".$row["Id_Fd"]."'";
-        $query=$local_db->query($string);
-        $tmp_nid=mysqli_fetch_array($query);
+        $query3=$local_db->query($string);
+        $tmp_nid=mysqli_fetch_array($query3);
 
         $tmp_changed=time();
         $statement = $local_db->prepare("update node set language = ?, title = ?, changed = ? where nid = ?");
@@ -577,8 +576,8 @@ class Sync{
     }
   }
 
-  public static function download_all($shared_db,$local_db,$my_fed){
-    Sync::download_after_offset(0,$shared_db,$local_db,$my_fed);
+  public static function download_all($shared_db,$local_db,$my_fed,$limit=100){
+    Sync::download_after_offset(0,$shared_db,$local_db,$my_fed,$limit=100);
   }
 
 

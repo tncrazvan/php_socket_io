@@ -48,7 +48,6 @@ abstract class Reader64 extends Thread{
     //the body of this abstract method is defined in ./utils/readers/ServerReader64.php
     $this->callback(base64_decode($this->result),$this->address,$this->port);
     socket_shutdown($this->sender_socket);
-    socket_close($this->sender_socket);
     echo "\n\t<- Connection ended";
     echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
   }
