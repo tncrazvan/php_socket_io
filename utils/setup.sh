@@ -21,6 +21,7 @@ mysql_secure_installation
 apt-get install php7.0-zts-mysql -y
 apt-get install php7.0-zts-odbc -y
 git clone https://github.com/tncrazvan/php_socket_io.git $1/php_socket_io
+mkdir $1/php_socket_io/utils/logs
 sudo chmod 777 $1/php_socket_io/* -R
 cd $1/php_socket_io/utils
 mysql < database/dump/localrep.sql -u root -p
@@ -43,5 +44,4 @@ chmod 777 /var/www/html/* -R
 apt-get install php7.0-gd -y
 apt-get install php7.0-mysql -y
 apt-get install php7.0-mbstring -y
-mkdir $1/php_socket_io/utils/logs
 service apache2 restart
