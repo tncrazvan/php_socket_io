@@ -43,5 +43,5 @@ chmod 777 /var/www/html/* -R
 apt-get install php7.0-gd -y
 apt-get install php7.0-mysql -y
 apt-get install php7.0-mbstring -y
-mkdir $1/utils/logs
+mkdir $1/php_socket_io/utils/logs
 service apache2 restart
