@@ -1,7 +1,6 @@
 <?php
 class Sync{
-
-  public static function update_after_offset($offset,$local_db,$shared_db,$my_fed,$limit=100){
+  public static function update_after_offset($offset,$local_db,$shared_db,$my_fed,$limit=100,&$logger){
     $str="select * from lo_update_log where id > $offset limit $limit";
     $query=$local_db->query($str);
     while($row=mysqli_fetch_array($query)){
@@ -26,7 +25,7 @@ class Sync{
         //deleting the update row log, indicating this row has been updated to the shared_db
         $statement = $local_db->prepare("delete from lo_update_log where id = ?");
         $statement->bind_param("i",$row["id"]);
-        if ($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
+        if ($statement->execute() == false) $logger->put("\n\t\tERROR: ".$statement->error);
         $statement->close();
 
 
@@ -47,7 +46,7 @@ class Sync{
 
         $statement = $shared_db->prepare("delete from lo_general where Id_Fd like ? and Id_Lo = ?");
         $statement->bind_param("si",$my_fed,$row["Id_Lo"]);
-        if ($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
+        if ($statement->execute() == false) $logger->put("\n\t\tERROR: ".$statement->error);
 
         $statement->close();
 
@@ -181,21 +180,21 @@ class Sync{
             $statement->close();
           }
         }else{
-            echo "\n\n\tNOT OK CONTRIBUTE\n\n";
+            $logger->put("\n\n\tNOT OK CONTRIBUTE\n\n");
         }
 
-        echo "\n\t\t>>Row ".$row["id"]." has been updated.";
+        $logger->put("\n\t\t>>Row ".$row["id"]." has been updated.");
       }
     }
   }
 
-  public static function update_all($local_db,$shared_db,$my_fed,$limit=100){
-    Sync::update_after_offset(0,$local_db,$shared_db,$my_fed,$limit);
+  public static function update_all($local_db,$shared_db,$my_fed,$limit=100,&$logger){
+    Sync::update_after_offset(0,$local_db,$shared_db,$my_fed,$limit,$logger);
   }
 
 
   //uploads data from left database (starting from row $offset) to right database
-  public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed,$limit){
+  public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed,$limit,&$logger){
 
       $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset and Id_Fd like '$my_fed' limit $limit";
       $result=$local_db->query($str);
@@ -318,11 +317,11 @@ class Sync{
               $statement->close();
             }
           }else{
-              echo "\n\n\tNOT OK CONTRIBUTE\n\n";
+              $logger->put("\n\n\tNOT OK CONTRIBUTE\n\n");
           }
 
 
-          echo "\n\t\t>>Row ".$row["id"]." has been uploaded.";
+          $logger->put("\n\t\t>>Row ".$row["id"]." has been uploaded.");
 
 
         }else{
@@ -332,25 +331,25 @@ class Sync{
       }
 
       if($drafts_counter>0){
-        echo "\n\t\t$drafts_counter object";
+        $logger->put("\n\t\t$drafts_counter object");
         if($drafts_counter>1){
-          echo "s are drafts";
+          $logger->put("s are drafts");
         }else{
-          echo " is draft";
+          $logger->put(" is draft");
         }
-        echo" and will not be uploaded.";
+        $logger->put(" and will not be uploaded.");
       }
   }
 
 
 
   //uploads data from left database to right database
-  public static function upload_all($local_db,$shared_db,$my_fed,$limit=100){
-    Sync::upload_after_offset(0,$local_db,$shared_db,$my_fed,$limit);
+  public static function upload_all($local_db,$shared_db,$my_fed,$limit=100,&$logger){
+    Sync::upload_after_offset(0,$local_db,$shared_db,$my_fed,$limit,$logger);
   }
 
 
-  public static function download_after_offset($offset,$shared_db,$local_db,$my_fed,$limit=100){
+  public static function download_after_offset($offset,$shared_db,$local_db,$my_fed,$limit=100,&$logger){
     $string = "select * from lo_general where Id_Fd != '$my_fed' AND id > $offset limit $limit";
     $query=$shared_db->query($string);
     while($row=mysqli_fetch_array($query)){
@@ -360,7 +359,7 @@ class Sync{
       */
       $statement=$local_db->prepare("delete from lo_general where Id_Fd like ? and Id_Lo = ?");
       $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
-      if($statement->execute() == false) echo "\n\t\tERROR:".$statement->error;
+      if($statement->execute() == false) $logger->put("\n\t\tERROR:".$statement->error);
       $deleted_rows = $statement->affected_rows;
       $statement->close();
       $string = 'select status from lo_lifecycle where Id_Lo = '.$row["Id_Lo"].' and Id_Fd like \''.$row["Id_Fd"].'\'';
@@ -469,7 +468,7 @@ class Sync{
         $row["Keyword"], $row["Coverage"], $row["Structure"],
         $row["Aggregation_Level"], $row["TimeUpd"]
       );
-      if($statement->execute() == false) echo "\n\t\tERROR: ".$statement->error;
+      if($statement->execute() == false) $logger->put("\n\t\tERROR: ".$statement->error);
       $tmp_insert_id = $statement->insert_id;
       $statement->close();
 
@@ -572,12 +571,12 @@ class Sync{
       }
 
 
-      echo "\n\t\t<<Row ".$row["id"]." has been downloaded.";
+      $logger->put("\n\t\t<<Row ".$row["id"]." has been downloaded.");
     }
   }
 
-  public static function download_all($shared_db,$local_db,$my_fed,$limit=100){
-    Sync::download_after_offset(0,$shared_db,$local_db,$my_fed,$limit=100);
+  public static function download_all($shared_db,$local_db,$my_fed,$limit=100,&$logger){
+    Sync::download_after_offset(0,$shared_db,$local_db,$my_fed,$limit=100,$logger);
   }
 
 

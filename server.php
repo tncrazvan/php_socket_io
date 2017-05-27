@@ -5,15 +5,19 @@ set_time_limit(0);
 ini_set("memory_imit",-1);
 
 define("WORKSPACE",__DIR__."/");
+define("LOG_FILE",WORKSPACE."utils/logs/".time().".log");
 
 require_once(WORKSPACE."./utils/readers/ServerReader64.php");
 require_once(WORKSPACE."./utils/database/Sync.php");
+require_once(WORKSPACE."./utils/writers/Logger.php");
 
 //parse settings file
 $general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
-
+$logger = new Logger(LOG_FILE);
 $sync = new class extends Thread{
 	public function run(){
+		$logger = new Logger(LOG_FILE);
+
 		$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
     $local_db=new DBConnection("localhost",$general_ini);
     $shared_db=new DBConnection("sharedhost",$general_ini);
@@ -21,6 +25,18 @@ $sync = new class extends Thread{
     $my_fed=$general_ini["federation_name"];
     $sleep_time=$general_ini["sleep_time"];
 
+
+		$result = $shared_db->query("select * from `lo_federation` where `ServerName` like '$my_fed'");
+		if(mysqli_num_rows($result)<1){
+			$statement = $shared_db->prepare("insert into `lo_federation`(ServerName,ServerAddress,TimeUpd) value(?,?,?)");
+			$time_tmp=time();
+			$statement->bind_param("ssi",$my_fed,$general_ini["local_address"],$time_tmp);
+			$statement->execute();
+			$logger->put("\nFederation \"$my_fed\" has been signed up to the comunity.");
+			$statement->close();
+		}else{
+			$logger->put("\nFederation \"$my_fed\" is already signed up. Skipping registration.");
+		}
     while(true){
 			$general_ini = parse_ini_file(WORKSPACE."./settings/general.ini");
 			$my_fed=$general_ini["federation_name"];
@@ -39,21 +55,22 @@ $sync = new class extends Thread{
       $local_r2=mysqli_fetch_array($query3);
       $shared_r2=mysqli_fetch_array($query4);
 
-      echo "\n\n\n\n\n\n\n############### Cheking... ################";
-			echo "\n\tFederate: $my_fed";
+      $logger->put("\n\n\n\n\n\n\n############### Cheking... ################");
+			
+			$logger->put("\n\tFederate: $my_fed");
       //using $query1 and $query2 here (UPLOADING)
       if(mysqli_num_rows($query2)==0){
         if(mysqli_num_rows($query1)>0){
-          echo "\n\t>>Trying to upload everything (limit ".$general_ini["upload_limit"].")...";
-          Sync::upload_all($local_db,$shared_db,$my_fed,$general_ini["upload_limit"]);
+          $logger->put("\n\t>>Trying to upload everything (limit ".$general_ini["upload_limit"].")...");
+          Sync::upload_all($local_db,$shared_db,$my_fed,$general_ini["upload_limit"],$logger);
         }else{
-          echo "\n\tShared database is up to date.";
+          $logger->put("\n\tShared database is up to date.");
         }
       }else if($local_r1["Id_Lo"] > $shared_r1["Id_Lo"] && $local_r1["Status"]!="draft"){
-        echo "\n\t>>Uploading (limit ".$general_ini["upload_limit"].")...";
-        Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed,$general_ini["upload_limit"]);
+        $logger->put("\n\t>>Uploading (limit ".$general_ini["upload_limit"].")...");
+        Sync::upload_after_offset($shared_r1["Id_Lo"],$local_db,$shared_db,$my_fed,$general_ini["upload_limit"],$logger);
       }else{
-        echo "\n\tShared database is up to date.";
+        $logger->put("\n\tShared database is up to date.");
       }
 
 
@@ -61,16 +78,16 @@ $sync = new class extends Thread{
       //using $query3 and $query4 here (DOWNLOADING)
       if(mysqli_num_rows($query3)==0){
         if(mysqli_num_rows($query4)>0){
-          echo "\n\t<<Downloading everything from the shared database (limit ".$general_ini["download_limit"].").";
-          Sync::download_all($shared_db,$local_db,$my_fed,$general_ini["download_limit"]);
+          $logger->put("\n\t<<Downloading everything from the shared database (limit ".$general_ini["download_limit"].").");
+          Sync::download_all($shared_db,$local_db,$my_fed,$general_ini["download_limit"],$logger);
         }else{
-          echo "\n\tLocal.db is up to date.";
+          $logger->put("\n\tLocal.db is up to date.");
         }
       }else if($shared_r2["id"] > $local_r2["shared_id"]){
-        echo "\n\t<<Downloading (limit ".$general_ini["download_limit"].")...";
-        Sync::download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed,$general_ini["download_limit"]);
+        $logger->put("\n\t<<Downloading (limit ".$general_ini["download_limit"].")...");
+        Sync::download_after_offset($local_r2["shared_id"],$shared_db,$local_db,$my_fed,$general_ini["download_limit"],$logger);
       }else{
-        echo "\n\tLocal.db is up to date.";
+        $logger->put("\n\tLocal.db is up to date.");
       }
 
 
@@ -78,14 +95,14 @@ $sync = new class extends Thread{
       $last_update=Sync::get_last_update_log($local_db);
 
       if($last_update!=null){
-        echo "\n\t>>Updating everything (limit ".$general_ini["update_limit"].")...";
-        Sync::update_all($local_db,$shared_db,$my_fed,$general_ini["update_limit"]);
+        $logger->put("\n\t>>Updating everything (limit ".$general_ini["update_limit"].")...");
+        Sync::update_all($local_db,$shared_db,$my_fed,$general_ini["update_limit"],$logger);
       }else{
-        echo "\n\tNo updates available.";
+        $logger->put("\n\tNo updates available.");
       }
 
 
-      echo "\n############### SLEEP $sleep_time... ################";
+      $logger->put("\n############### SLEEP $sleep_time... ################");
       sleep($sleep_time);
 
 
@@ -93,7 +110,7 @@ $sync = new class extends Thread{
 
     $local_db->close();
     $shared_db->close();
-    echo "\nLocal and Shared db connections closed";
+    $logger->put("\nLocal and Shared db connections closed");
   }
 };
 
@@ -114,7 +131,7 @@ if(!($socket=socket_create(AF_INET, SOCK_STREAM,SOL_TCP))){
 	die("\nCouldn't create socket: [$errorcode] $errormsg");
 }
 
-echo "\nSocket created";
+$logger->put("\nSocket created");
 
 /*
 	Bind of Source Address.
@@ -127,7 +144,7 @@ if(!socket_bind($socket,"127.0.0.1",$general_ini["listener_port"])){
 	die("\nCould not bind socket: [$errorcode] $errormsg");
 }
 
-echo "\nSocked bind OK";
+$logger->put("\nSocked bind OK");
 
 /*
 	Sarting to listen for connections (not blocking call)
@@ -135,7 +152,7 @@ echo "\nSocked bind OK";
 if(!socket_listen($socket,$general_ini["listener_port"])){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
-	die("\nSocket can't listen:  [$errorcode] $errormsg");
+	$logger->put("\nSocket can't listen:  [$errorcode] $errormsg");
 }
 
 while($allowed_to_run){

@@ -1,4 +1,5 @@
 <?php
+require_once(WORKSPACE."./utils/writers/Logger.php");
 abstract class Reader64 extends Thread{
   private
           //socket of the receiver
@@ -11,12 +12,16 @@ abstract class Reader64 extends Thread{
           $mtu,
           //result of the final message (the whole message, not just a chunk of N bytes)
           $result="";
+  protected $logger;
   public function Reader64($sender_socket,$mtu){
 
     //saving sender's socket
     $this->sender_socket=$sender_socket;
     //saving number of bytes to read each iteration
     $this->mtu=$mtu;
+    //create a logger using the same file the routine is using at this moment
+
+    $this->logger = new Logger(LOG_FILE);
   }
 
   public function run(){
@@ -26,11 +31,10 @@ abstract class Reader64 extends Thread{
     	$this->address=$address;
       $this->port=$port;
     }
-    echo "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-    echo "\n\t-> Connected to client $this->address:$this->port";
+    $this->logger->put("\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    $this->logger->put("\n\t-> Connected to client $this->address:$this->port");
     $this->result="";
 
-    //echo "\n\n";
     $i=0;
     //read once, then keep reading if the sender is still sending data
     do{
@@ -39,7 +43,6 @@ abstract class Reader64 extends Thread{
         $line=@socket_read($this->sender_socket,$this->mtu);//MTU=2048
         //if the chunk that I'm reading contains anything
         if($line){
-          //echo "[$line]";
           //append it to the final result
           $this->result.=$line;
         }
@@ -48,8 +51,8 @@ abstract class Reader64 extends Thread{
     //the body of this abstract method is defined in ./utils/readers/ServerReader64.php
     $this->callback(base64_decode($this->result),$this->address,$this->port);
     socket_shutdown($this->sender_socket);
-    echo "\n\t<- Connection ended";
-    echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    $this->logger->put("\n\t<- Connection ended");
+    $this->logger->put("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   }
 
   //callback method
