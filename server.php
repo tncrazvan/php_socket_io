@@ -6,7 +6,9 @@ ini_set("memory_imit",-1);
 
 define("WORKSPACE",__DIR__."/");
 define("LOG_FILE",WORKSPACE."utils/logs/".time().".log");
-
+if(!file_exists(WORKSPACE."utils/logs")){
+	mkdir(WORKSPACE."utils/logs" ,0777);
+}
 require_once(WORKSPACE."./utils/readers/ServerReader64.php");
 require_once(WORKSPACE."./utils/database/Sync.php");
 require_once(WORKSPACE."./utils/writers/Logger.php");
