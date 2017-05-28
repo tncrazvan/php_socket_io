@@ -42,6 +42,7 @@ mkdir files/collabrep/cache
 cp default.settings.php settings.php
 chmod 777 /var/www/html/* -R
 apt-get install php7.0-gd -y
+apt-get install php7.0-dom -y
 apt-get install php7.0-mysql -y
 apt-get install php7.0-mbstring -y
 service apache2 restart
