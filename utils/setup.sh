@@ -14,7 +14,7 @@ make install
 mkdir -p /etc/php/7.0-zts/conf.d/
 echo "extension=pthreads.so" > /etc/php/7.0-zts/conf.d/pthreads.ini
 cd /etc/php/7.0-zts/cli/conf.d
-sudo ln -s ../../conf.d/pthreads.ini
+ln -s ../../conf.d/pthreads.ini
 rm /var/cache/apt/archives/lock
 apt-get install mysql-server -y
 mysql_secure_installation
@@ -22,7 +22,7 @@ apt-get install php7.0-zts-mysql -y
 apt-get install php7.0-zts-odbc -y
 git clone https://github.com/tncrazvan/php_socket_io.git $1/php_socket_io
 mkdir $1/php_socket_io/utils/logs
-sudo chmod 777 $1/php_socket_io/* -R
+chmod 777 $1/php_socket_io/* -R
 cd $1/php_socket_io/utils
 mysql < database/dump/localrep.sql -u root -p
 cp $1/php_socket_io/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
@@ -32,7 +32,6 @@ rm /var/www/html/* -fr
 apt-get install libapache2-mod-php7.0 -y
 git clone https://github.com/tncrazvan/glorep.git /var/www/html/glorep
 mv /var/www/html/glorep/* /var/www/html
-mv /var/www/html/glorep/.* /var/www/html
 rm /var/www/html/glorep -fr
 chmod 777 /var/www/html/* -R
 cd /var/www/html/sites/default
