@@ -38,8 +38,8 @@ mysql < $1/php_socket_io/utils/database/dump/localrep.sql -u root -p
 cp $1/php_socket_io/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
 service mysql restart
 apt-get install apache2 -y
-rm /var/www/html/* -fr
 apt-get install libapache2-mod-php7.0 -y
+rm /var/www/html/glorep -fr
 git clone https://github.com/tncrazvan/glorep.git /var/www/html/glorep
 mkdir /var/www/html/glorep/sites/default/files
 mkdir /var/www/html/glorep/sites/default/files/collabrep
