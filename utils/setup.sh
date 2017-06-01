@@ -41,11 +41,9 @@ apt-get install apache2 -y
 rm /var/www/html/* -fr
 apt-get install libapache2-mod-php7.0 -y
 git clone https://github.com/tncrazvan/glorep.git /var/www/html/glorep
-mv /var/www/html/glorep/* /var/www/html
-rm /var/www/html/glorep -fr
-mkdir /var/www/html/sites/default/files
-mkdir /var/www/html/sites/default/files/collabrep
-mkdir /var/www/html/sites/default/files/collabrep/cache
-cp /var/www/html/sites/default/default.settings.php /var/www/html/sites/default/settings.php
-chmod 777 /var/www/html/* -R
+mkdir /var/www/html/glorep/sites/default/files
+mkdir /var/www/html/glorep/sites/default/files/collabrep
+mkdir /var/www/html/glorep/sites/default/files/collabrep/cache
+cp /var/www/html/glorep/sites/default/default.settings.php /var/www/html/sites/default/settings.php
+chmod 777 /var/www/html/glorep/* -R
 service apache2 restart
