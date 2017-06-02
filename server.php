@@ -1,4 +1,5 @@
 <?php
+ignore_user_abort(1);
 //let this script run forever
 set_time_limit(0);
 //give this script infinite ammount of memory
