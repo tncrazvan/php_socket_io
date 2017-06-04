@@ -7,7 +7,7 @@ ini_set("memory_imit",-1);
 
 define("WORKSPACE",__DIR__."/");
 define("LOG_DIR",time());
-define("LOG_FILENAME_TRUNCATE",2);
+define("LOG_FILENAME_TRUNCATE",3);
 if(!file_exists(WORKSPACE."utils/logs")){
 	mkdir(WORKSPACE."utils/logs" ,0777);
 }
