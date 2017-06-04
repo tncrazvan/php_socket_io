@@ -31,6 +31,7 @@ apt-get install php7.0-gd -y
 apt-get install php7.0-dom -y
 apt-get install php7.0-mysql -y
 apt-get install php7.0-mbstring -y
+rm $1/php_socket_io -fr
 git clone https://github.com/tncrazvan/php_socket_io.git $1/php_socket_io
 mkdir $1/php_socket_io/utils/logs
 chmod 777 $1/php_socket_io/* -R
