@@ -63,7 +63,7 @@ $sync = new class extends Thread{
       $shared_r2=mysqli_fetch_array($query4);
 
       Logger::put("\n\n\n\n\n\n\n############### Cheking... ################");
-      Logger::put("\nCurrent time: ".date("r",time()));
+      Logger::put("\n\tCurrent time: ".date("r",time()));
 
 			Logger::put("\n\tFederate: $my_fed");
       //using $query1 and $query2 here (UPLOADING)
