@@ -48,3 +48,6 @@ mkdir /var/www/html/glorep/sites/default/files/collabrep/cache
 cp /var/www/html/glorep/sites/default/default.settings.php /var/www/html/glorep/sites/default/settings.php
 chmod 777 /var/www/html/glorep/* -R
 service apache2 restart
+cp $1/php_socket_io/utils/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+service mysql restart
+
