@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `lo_general` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`Id_Lo`,`Id_Fd`),
   KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_general: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_general` DISABLE KEYS */;
