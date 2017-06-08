@@ -336,7 +336,6 @@ class Sync{
 
           /*uploading category of the object to shared database*/
           $string = "select * from lo_category where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
-          echo "\nHERE:$string";
           $result_tmp = $local_db->query($string);
           if(mysqli_num_rows($result_tmp) >= 1){
             $item = mysqli_fetch_array($result_tmp);
@@ -498,18 +497,15 @@ class Sync{
       $statement->close();
 
 
-      /*downloading category of the object*/
-      $string = "select * from lo_category where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
-      $result_tmp = $shared_db->query($string);
-      if(mysqli_num_rows($result_tmp) >= 1){
-        $item = mysqli_fetch_array($result_tmp);
-        $statement = $local_db->prepare("insert into lo_category(Id_Lo,Id_Fd,Categoria_LO) value(?,?,?)");
-        $statement->bind_param("iss",$item["Id_Lo"],$item["Id_Fd"],$item["Categoria_LO"]);
-        $statement->execute();
-        $statement->close();
-      }
+
 
       /*downloading lifecycle of the object*/
+      $statement=$local_db->prepare("delete from lo_lifecycle where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_lifecycle where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -522,6 +518,12 @@ class Sync{
 
 
       /*downloading meta-metadata of the object*/
+      $statement=$local_db->prepare("delete from lo_metadata where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_metadata where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $local_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -534,6 +536,12 @@ class Sync{
 
 
       /*downloading technical of the object*/
+      $statement=$local_db->prepare("delete from lo_technical where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_technical where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -545,6 +553,12 @@ class Sync{
       }
 
       /*downloading educational of the object*/
+      $statement=$local_db->prepare("delete from lo_educational where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_educational where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -560,6 +574,12 @@ class Sync{
       }
 
       /*downloading rights of the object*/
+      $statement=$local_db->prepare("delete from lo_rights where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_rights where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -571,6 +591,12 @@ class Sync{
       }
 
       /*downloading relation of the object*/
+      $statement=$local_db->prepare("delete from lo_relation where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_relation where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -583,6 +609,12 @@ class Sync{
       }
 
       /*downloading file of the object*/
+      $statement=$local_db->prepare("delete from lo_file where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_file where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -595,6 +627,12 @@ class Sync{
       }
 
       /*downloading contribute of the object*/
+      $statement=$local_db->prepare("delete from lo_contribute where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
       $string = "select * from lo_contribute where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
       $result_tmp = $shared_db->query($string);
       if(mysqli_num_rows($result_tmp) >= 1){
@@ -606,6 +644,22 @@ class Sync{
         }
       }
 
+      /*downloading category of the object*/
+      $statement=$local_db->prepare("delete from lo_category where Id_Fd like ? and Id_Lo = ?");
+      $statement->bind_param("si",$row["Id_Fd"],$row["Id_Lo"]);
+      if($statement->execute() == false) Logger::put("\n\t\tERROR:".$statement->error);
+      $deleted_rows = $statement->affected_rows;
+      $statement->close();
+
+      $string = "select * from lo_category where Id_Fd like '".$row["Id_Fd"]."' and Id_Lo = ".$row["Id_Lo"];
+      $result_tmp = $shared_db->query($string);
+      if(mysqli_num_rows($result_tmp) >= 1){
+        $item = mysqli_fetch_array($result_tmp);
+        $statement = $local_db->prepare("insert into lo_category(Id_Lo,Id_Fd,Categoria_LO) value(?,?,?)");
+        $statement->bind_param("iss",$item["Id_Lo"],$item["Id_Fd"],$item["Categoria_LO"]);
+        $statement->execute();
+        $statement->close();
+      }
 
       Logger::put("\n\t\t<<Row ".$row["id"]." has been downloaded.");
     }
