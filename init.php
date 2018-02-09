@@ -1,9 +1,26 @@
 <?php
+/* [A]
+  __DIR__ è una costante che indica la posizione assoluto del file corrente,
+  se stai chiamando lo script init.php dalla cartella del daemon allora
+  WORKSPACE = "/path/assoluto/per/il/daemon",
+  se invece stai chiamando init.php da htdocs allora
+  WORKSPACE = "/path/assoluto/per/htdocs",
+*/
 
-define("WORKSPACE",__DIR__);
+//define("WORKSPACE",__DIR__); 
+
+/* [B]
+  Supponiamo che stai chiamando questo script dalla cartella htdocs,
+  allora devi trovare un'altro modo per scrivere nel file general.ini,
+  e lo fai usando un path assoluto in questo modo: define("WORKSPACE","/home/nicola/php_socket_io/"); 
+*/
+
+define("WORKSPACE","/home/nicola/php_socket_io/");
+//WORKSPACE è essenzialmente la cartella dove sta lavorando il daemon.
+
 $general_ini=array();
 echo "\nSetting up names...";
-$general_ini["location"] = WORKSPACE;
+//$general_ini["location"] = WORKSPACE;
 $general_ini["federation_name"]="unknown";
 $general_ini["local_address"]="127.0.0.1";
 $general_ini["local_username"]="unknown";
@@ -27,6 +44,7 @@ $general_ini["sleep_time"]=10;
 
 echo "\nOpening file......";
 $handler = fopen(WORKSPACE."./settings/general.ini", "w");
+
 $tmp = "";
 echo "\nWritting:\n";
 foreach($general_ini as $key => $value){
