@@ -14,18 +14,20 @@ if(!file_exists(WORKSPACE."utils/logs")){
 if(!file_exists(WORKSPACE."utils/logs/".LOG_DIR."_log")){
 	mkdir(WORKSPACE."utils/logs/".LOG_DIR."_log" ,0777);
 }
-require_once(WORKSPACE."./utils/readers/ServerReader64.php");
+/*require_once(WORKSPACE."./utils/readers/ServerReader64.php");*/
+
+require_once(WORKSPACE."./utils/database/DBConnection.php");
+require_once(WORKSPACE."./utils/messages/RoutineMessage64.php");
 require_once(WORKSPACE."./utils/database/Sync.php");
 require_once(WORKSPACE."./utils/writers/Logger.php");
+
 
 //parse settings file
 $general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
 
-$sync = new class extends Thread{
-	public function run(){
+/*$sync = new class extends Thread{
+	public function run(){*/
 
-
-		$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
     $local_db=new DBConnection("localhost",$general_ini);
     $shared_db=new DBConnection("sharedhost",$general_ini);
 
@@ -119,10 +121,10 @@ $sync = new class extends Thread{
     $local_db->close();
     $shared_db->close();
     Logger::put("\nLocal and Shared db connections closed");
-  }
-};
+  /*}
+};*/
 
-$sync->start();
+//$sync->start();
 
 
 /*
@@ -130,56 +132,56 @@ $sync->start();
 	assigning "false" makes it so the server stops listening for connections.
 	IMPORTANT: already enstablished connections will not be lost.
 */
-$allowed_to_run=true;
+//$allowed_to_run=true;
 //creo un nuovo Thread
-if(!($socket=socket_create(AF_INET, SOCK_STREAM,SOL_TCP))){
+/*if(!($socket=socket_create(AF_INET, SOCK_STREAM,SOL_TCP))){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 
 	die("\nCouldn't create socket: [$errorcode] $errormsg");
-}
+}*/
 
-Logger::put("\nSocket created");
+//Logger::put("\nSocket created");
 
 /*
 	Bind of Source Address.
 	This server prepeares its socket for incoming connections.
 */
 
-if(!socket_bind($socket,"127.0.0.1",$general_ini["listener_port"])){
+/*if(!socket_bind($socket,"127.0.0.1",$general_ini["listener_port"])){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	die("\nCould not bind socket: [$errorcode] $errormsg");
 }
 
-Logger::put("\nSocked bind OK");
+Logger::put("\nSocked bind OK");*/
 
 /*
 	Sarting to listen for connections (not blocking call)
 */
-if(!socket_listen($socket,$general_ini["listener_port"])){
+/*if(!socket_listen($socket,$general_ini["listener_port"])){
 	$errorcode=socket_last_error();
 	$errormsg=socket_strerror($errorcode);
 	Logger::put("\nSocket can't listen:  [$errorcode] $errormsg");
-}
+}*/
 
-while($allowed_to_run){
+//while($allowed_to_run){
 	//accepting 1 incoming connection
-	$client=socket_accept($socket);
+	//$client=socket_accept($socket);
 
 
-	$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
+	//$general_ini=parse_ini_file(WORKSPACE."./settings/general.ini");
 	/*
 		ServerReader64 creates a Reader64, which in turn creates a Thread
 		which will read the client's message in chunks of 2048 bytes
 	*/
-	$sr=new ServerReader64($client/*client's socket*/,$general_ini["server_reader_mtu"]/*MTU*/);
+//$sr=new ServerReader64($client/*client's socket*/,$general_ini["server_reader_mtu"]/*MTU*/);
 
 	//starting the reader (which is a thread)
-	$sr->start();
-}
+	//$sr->start();
+//}
 
 
 //closing my(server) socket
-socket_shutdown($socket);
-socket_close($socket);
+/*socket_shutdown($socket);
+socket_close($socket);*/

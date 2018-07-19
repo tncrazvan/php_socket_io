@@ -1,6 +1,6 @@
 <?php
 require_once(WORKSPACE."./utils/writers/Logger.php");
-abstract class Reader64 extends Thread{
+abstract class Reader64{
   private
           //socket of the receiver
           $sender_socket=null,
@@ -21,7 +21,7 @@ abstract class Reader64 extends Thread{
     //create a logger using the same file the routine is using at this moment
   }
 
-  public function run(){
+  public function start(){
 
     //getting parameters from sender
     if(socket_getpeername($this->sender_socket,$address,$port)){
