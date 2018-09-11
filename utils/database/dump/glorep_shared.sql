@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versione server:              10.1.21-MariaDB - mariadb.org binary distribution
+-- Versione server:              10.1.33-MariaDB - mariadb.org binary distribution
 -- S.O. server:                  Win32
--- HeidiSQL Versione:            9.4.0.5125
+-- HeidiSQL Versione:            9.5.0.5196
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -77,6 +77,8 @@ CREATE TABLE IF NOT EXISTS `lo_federation` (
 
 -- Dump dei dati della tabella glorep_shared.lo_federation: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_federation` DISABLE KEYS */;
+INSERT INTO `lo_federation` (`ServerName`, `ServerAddress`, `N_Lo`, `TimeUpd`) VALUES
+	('unipg', '127.0.0.1', 0, 1532009456);
 /*!40000 ALTER TABLE `lo_federation` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_file
@@ -112,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `lo_general` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `node_id` (`Id_Lo`,`Id_Fd`),
   KEY `Id_Lo_Id_Fd` (`Id_Lo`,`Id_Fd`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains special Learning Object properties';
 
 -- Dump dei dati della tabella glorep_shared.lo_general: ~0 rows (circa)
 /*!40000 ALTER TABLE `lo_general` DISABLE KEYS */;
@@ -145,8 +147,11 @@ CREATE TABLE IF NOT EXISTS `lo_lifecycle` (
   CONSTRAINT `FK_lo_lifecycle_lo_general` FOREIGN KEY (`Id_Lo`, `Id_Fd`) REFERENCES `lo_general` (`Id_Lo`, `Id_Fd`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Contains the story and the current state of the Learning...';
 
--- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~0 rows (circa)
+-- Dump dei dati della tabella glorep_shared.lo_lifecycle: ~1 rows (circa)
 /*!40000 ALTER TABLE `lo_lifecycle` DISABLE KEYS */;
+INSERT INTO `lo_lifecycle` (`Id_Lo`, `Id_Fd`, `Version`, `Status`) VALUES
+	(2, 'unige', '1', 'final'),
+	(2, 'unipg', '1', 'final');
 /*!40000 ALTER TABLE `lo_lifecycle` ENABLE KEYS */;
 
 -- Dump della struttura di tabella glorep_shared.lo_metadata

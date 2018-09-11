@@ -484,7 +484,7 @@ class Sync{
           Keyword, Coverage, Structure,
           Aggregation_Level, Deleted, TimeUpd
         ) "
-          ."value (?,?,?,?,?,?,?,?,?,?,?)";
+          ."value (?,?,?,?,?,?,?,?,?,?,?,?)";
       $statement = $local_db->prepare($str);
       $statement->bind_param("isissssssisi",
         $row["Id_Lo"], $row["Id_Fd"], $row["id"],
