@@ -59,15 +59,15 @@ class Sync{
             Id_Fd,Id_Lo,
             Title,Language,
             Description,Keyword,Coverage,
-            Structure,Aggregation_Level,TimeUpd
+            Structure,Aggregation_Level,Deleted,TimeUpd
           ) "
-            ."values (?,?,?,?,?,?,?,?,?,?)";
+            ."values (?,?,?,?,?,?,?,?,?,?,?)";
         $statement = $shared_db->prepare($str);
-        $statement->bind_param("sissssssii",
+        $statement->bind_param("sissssssisi",
           $row["Id_Fd"],$row["Id_Lo"],
           $row["Title"],$row["Language"],
           $row["Description"],$row["Keyword"],$row["Coverage"],
-          $row["Structure"],$row["Aggregation_Level"],$row["TimeUpd"]
+          $row["Structure"],$row["Aggregation_Level"],$row["Deleted"],$row["TimeUpd"]
         );
         /*
           there's actually no need to insert it right away,
@@ -208,7 +208,6 @@ class Sync{
 
   //uploads data from left database (starting from row $offset) to right database
   public static function upload_after_offset($offset,$local_db,$shared_db,$my_fed,$limit){
-
       $str="select * from lo_general as G inner join lo_lifecycle as L using(Id_Lo,Id_Fd) where G.Id_Lo > $offset and Id_Fd like '$my_fed' limit $limit";
       $result=$local_db->query($str);
       $drafts_counter=0;
@@ -219,15 +218,15 @@ class Sync{
               Id_Fd,Id_Lo,
               Title,Language,
               Description,Keyword,Coverage,
-              Structure,Aggregation_Level,TimeUpd
+              Structure,Aggregation_Level,Deleted,TimeUpd
             ) "
-              ."values (?,?,?,?,?,?,?,?,?,?)";
+              ."values (?,?,?,?,?,?,?,?,?,?,?)";
           $statement = $shared_db->prepare($str);
-          $statement->bind_param("sissssssii",
+          $statement->bind_param("sissssssisi",
             $row["Id_Fd"],$row["Id_Lo"],
             $row["Title"],$row["Language"],
             $row["Description"],$row["Keyword"],$row["Coverage"],
-            $row["Structure"],$row["Aggregation_Level"],$row["TimeUpd"]
+            $row["Structure"],$row["Aggregation_Level"],$row["Deleted"],$row["TimeUpd"]
           );
           $statement->execute();
           $tmp_insert_id=$statement->insert_id;
@@ -411,6 +410,7 @@ class Sync{
         ."comment,promote,sticky,"
         ."tnid,translate) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
+
         $statement->bind_param("iissssiiiiiiiii",
           $row["Id_Lo"],
           $row["Id_Lo"] ,$row["Id_Fd"], $type,
@@ -482,15 +482,15 @@ class Sync{
           Id_Lo, Id_Fd, shared_id,
           Title, Language, Description,
           Keyword, Coverage, Structure,
-          Aggregation_Level, TimeUpd
+          Aggregation_Level, Deleted, TimeUpd
         ) "
           ."value (?,?,?,?,?,?,?,?,?,?,?)";
       $statement = $local_db->prepare($str);
-      $statement->bind_param("isissssssii",
+      $statement->bind_param("isissssssisi",
         $row["Id_Lo"], $row["Id_Fd"], $row["id"],
         $row["Title"], $row["Language"], $row["Description"],
         $row["Keyword"], $row["Coverage"], $row["Structure"],
-        $row["Aggregation_Level"], $row["TimeUpd"]
+        $row["Aggregation_Level"], $row["Deleted"], $row["TimeUpd"]
       );
       if($statement->execute() == false) Logger::put("\n\t\tERROR: ".$statement->error);
       $tmp_insert_id = $statement->insert_id;
