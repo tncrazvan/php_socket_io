@@ -460,19 +460,19 @@ class Sync{
         $statement->close();
       }else{
         /*updating existing node*/
-
         $string = "select nid from node where vid = ".$row["Id_Lo"]." and Id_Fd like '".$row["Id_Fd"]."'";
         $query3=$local_db->query($string);
         $tmp_nid=mysqli_fetch_array($query3);
 
         $tmp_changed=time();
         $statement = $local_db->prepare("update node set language = ?, title = ?, changed = ? where nid = ?");
-        $statement->bind_param("ssii",$row["Language"],$row["Title"],$tmp_changed,$tmp_nid);
+
+        $statement->bind_param("ssii",$row["Language"],$row["Title"],$tmp_changed,$tmp_nid["nid"]);
         $statement->execute();
         $statement->close();
 
         $statement = $local_db->prepare("update node_revision set title = ?, timestamp = ? where nid = ?");
-        $statement->bind_param("sii",$row["Title"],$tmp_changed,$tmp_nid);
+        $statement->bind_param("sii",$row["Title"],$tmp_changed,$tmp_nid["nid"]);
         $statement->execute();
         $statement->close();
       }
